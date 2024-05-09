@@ -1,0 +1,55 @@
+E-commerce-Order-Processing-Platform/
+│ 
+├── api-gateway/
+│   └── main.go
+│   
+├── microservices/
+│   ├── user-service/
+│   │   └── main.go
+│   │
+│   ├── product-service/
+│   │   └── main.go
+│   │
+│   ├── order-service/
+│   │   └── main.go
+│   │
+│   └── inventory-service/
+│       └── main.go
+│   
+├── auth/
+│   ├── jwt/
+│   └── middlewares/
+│   
+├── ci-cd/
+│   ├── pipelines/
+│   ├── scripts/
+│   └── README.md
+│   
+├── config/
+│   ├── settings.yaml
+│   └── envs/
+│   
+├── databases/
+│   ├── user-service.sql
+│   ├── product-service.sql
+│   ├── order-service.sql
+│   └── inventory-service.sql
+│   
+├── grpc/
+│   ├── user-service.proto
+│   ├── product-service.proto
+│   ├── order-service.proto
+│   └── inventory-service.proto
+│   
+├── kafka/
+│   ├── topics/
+│   ├── consumers/
+│   ├── producers/
+│   └── config/
+│   
+├── monitoring/
+│   ├── prometheus/
+│   ├── grafana/
+│   └── README.md
+│   
+└── README.md
