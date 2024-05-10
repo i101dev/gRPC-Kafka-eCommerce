@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/i101dev/gRPC-kafka-eCommerce/auth"
@@ -13,8 +12,6 @@ func Handle_get_index(c *fiber.Ctx) error {
 }
 
 func Handle_post_login(c *fiber.Ctx) error {
-
-	jwtSecretStr := os.Getenv("JWT_SECRET")
 
 	var request struct {
 		Username string `json:"username"`
@@ -34,7 +31,7 @@ func Handle_post_login(c *fiber.Ctx) error {
 		role = "customer"
 	}
 
-	tokenString, err := auth.GenerateJWT(request.Username, role, jwtSecretStr)
+	tokenString, err := auth.GenerateJWT(request.Username, role)
 
 	if err != nil {
 		fmt.Print(err.Error())

@@ -4,6 +4,30 @@ E-commerce-Order-Processing-Platform/
 │   ├── handlers.go
 │   └── main.go
 │   
+├── auth/
+│   └── jwt.go
+│   
+├── ci-cd/
+│   ├── pipelines/
+│   ├── scripts/
+│   └── README.md
+│   
+├── config/
+│   ├── settings.yaml
+│   └── .env
+│   
+├── grpc/
+│   ├── user-service.proto
+│   ├── product-service.proto
+│   ├── order-service.proto
+│   └── inventory-service.proto
+│   
+├── kafka/
+│   ├── topics/
+│   ├── consumers/
+│   ├── producers/
+│   └── config/
+│   
 ├── microservices/
 │   ├── user/
 │   │   ├── .env
@@ -21,36 +45,6 @@ E-commerce-Order-Processing-Platform/
 │   │
 │   ├── order/
 │   └── inventory/
-│   
-├── auth/
-│   └── jwt.go
-│   
-├── ci-cd/
-│   ├── pipelines/
-│   ├── scripts/
-│   └── README.md
-│   
-├── config/
-│   ├── settings.yaml
-│   └── .env
-│   
-├── databases/
-│   ├── user-service.sql
-│   ├── product-service.sql
-│   ├── order-service.sql
-│   └── inventory-service.sql
-│   
-├── grpc/
-│   ├── user-service.proto
-│   ├── product-service.proto
-│   ├── order-service.proto
-│   └── inventory-service.proto
-│   
-├── kafka/
-│   ├── topics/
-│   ├── consumers/
-│   ├── producers/
-│   └── config/
 │   
 ├── monitoring/
 │   ├── prometheus/

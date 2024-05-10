@@ -18,12 +18,12 @@ func registerUser(c *fiber.Ctx) error {
 	user := new(User)
 
 	if err := c.BodyParser(&user); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Cannot parse request"})
+		return c.SendStatus(http.StatusBadRequest)
 	}
 
 	hashedPassword, err := hashPassword(user.Password)
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to hash password"})
+		return c.SendStatus(http.StatusInternalServerError)
 	}
 
 	user.CreatedAt = time.Now()
@@ -32,7 +32,7 @@ func registerUser(c *fiber.Ctx) error {
 	user.Role = "customer"
 
 	if err := db.Create(&user).Error; err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Username or email already exists"})
+		return c.SendStatus(http.StatusBadRequest)
 	}
 
 	return c.Status(http.StatusCreated).JSON(user)
@@ -43,24 +43,24 @@ func loginUser(c *fiber.Ctx) error {
 	db := c.Locals("db").(*gorm.DB)
 
 	payload := new(UserLoginParams)
+	userDat := new(User)
 
 	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Cannot parse request"})
+		return c.SendStatus(http.StatusBadRequest)
 	}
 
-	var userDat User
 	if err := db.Where("username = ?", payload.Username).First(&userDat).Error; err != nil {
-		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid username or password"})
+		return c.SendStatus(http.StatusUnauthorized)
 	}
 
 	if !checkPassword(userDat.Password, payload.Password) {
-		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid credentials"})
+		return c.SendStatus(http.StatusUnauthorized)
 	}
 
 	token, err := auth.GenerateJWT(userDat.Username, userDat.Role)
 
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Could not create JWT token"})
+		return c.SendStatus(http.StatusInternalServerError)
 	}
 
 	return c.Status(http.StatusOK).JSON(fiber.Map{"token": token})
