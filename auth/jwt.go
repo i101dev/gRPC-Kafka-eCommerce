@@ -9,7 +9,12 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateJWT(userID, role, secretKey string) (string, error) {
+func GenerateJWT(userID string, role string) (string, error) {
+
+	secretKey := os.Getenv("JWT_SECRET")
+	if secretKey == "" {
+		return "", fmt.Errorf("JWT secret not defined")
+	}
 
 	claims := jwt.MapClaims{
 		"user_id": userID,
@@ -19,7 +24,6 @@ func GenerateJWT(userID, role, secretKey string) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
 	tokenString, err := token.SignedString([]byte(secretKey))
 
 	if err != nil {

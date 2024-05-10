@@ -5,10 +5,22 @@ E-commerce-Order-Processing-Platform/
 │   └── main.go
 │   
 ├── microservices/
-│   ├── user-service.go
-│   ├── product-service.go/
-│   ├── order-service.go
-│   └── inventory-service.go
+│   ├── user/
+│   │   ├── .env
+│   │   ├── docker-compose.yaml
+│   │   ├── handlers.go
+│   │   ├── main.go
+│   │   └── models.go
+│   │
+│   ├── product/
+│   │   ├── .env
+│   │   ├── docker-compose.yaml
+│   │   ├── handlers.go
+│   │   ├── main.go
+│   │   └── models.go
+│   │
+│   ├── order/
+│   └── inventory/
 │   
 ├── auth/
 │   └── jwt.go

@@ -40,20 +40,29 @@ func main() {
 	// --------------------------------------------------------------------------
 	// ROUTES
 	//
-	api := app.Group("/api")
 
-	api.Post("/login", Handle_post_login)
+	app.Get("/", Handle_get_index)
+	app.Post("/login", Handle_post_login)
 
-	api.Get("/", Handle_get_index)
-	api.Get("/products", auth.ValidateJWT, Handle_get_products)
-	api.Get("/inventory", auth.ValidateJWT, Handle_get_inventory)
+	// --------------------------------------------------------------------------
+	// Customer API
+	//
+	api_cust := app.Group("/api")
+	api_cust.Use(auth.ValidateJWT)
+	api_cust.Get("/products", Handle_get_products)
+	api_cust.Get("/inventory", Handle_get_inventory)
 
+	// --------------------------------------------------------------------------
+	// Admin API
+	//
 	api_admin := app.Group("/admin")
 	api_admin.Use(auth.ValidateJWT)
-
 	api_admin.Get("/users", auth.RequireRole("admin"), Handle_get_users)
 	api_admin.Get("/orders", auth.RequireRole("admin"), haandl_get_orders)
 
+	// --------------------------------------------------------------------------
+	// Launch server
+	//
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -64,6 +73,6 @@ func main() {
 
 func fiberErrorHandler(c *fiber.Ctx, err error) error {
 	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-		"error": err.Error(),
+		"Fiber error": err.Error(),
 	})
 }
