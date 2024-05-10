@@ -1,4 +1,4 @@
-# Microservices - E-commerce Order Processing Platform
+# Microservices - E-commerce Order Processing
 
 ## Components:
 
@@ -47,7 +47,7 @@
     - Listens to Kafka topics for order-related events and publishes "Inventory Changed" events.
     - Provides REST endpoints for inventory management via Fiber.
 
-## Additional Considerations:
+---
 
 -   **Authentication and Authorization**: JWT-based authentication and authorization to ensure secure access to the API gateway and microservices.
 
