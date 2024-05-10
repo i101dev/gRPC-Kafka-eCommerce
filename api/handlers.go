@@ -19,13 +19,22 @@ func Handle_post_login(c *fiber.Ctx) error {
 	var request struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
+		Referral string `json:"referral"`
 	}
 
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request format"})
 	}
 
-	tokenString, err := auth.GenerateJWT(request.Username, jwtSecretStr)
+	var role string
+	switch request.Referral {
+	case "0x1":
+		role = "admin"
+	default:
+		role = "customer"
+	}
+
+	tokenString, err := auth.GenerateJWT(request.Username, role, jwtSecretStr)
 
 	if err != nil {
 		fmt.Print(err.Error())

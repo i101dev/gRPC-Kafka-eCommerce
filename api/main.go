@@ -42,13 +42,17 @@ func main() {
 	//
 	api := app.Group("/api")
 
+	api.Post("/login", Handle_post_login)
+
 	api.Get("/", Handle_get_index)
-	api.Get("/users", auth.ValidateJWT, Handle_get_users)
-	api.Get("/orders", auth.ValidateJWT, haandl_get_orders)
 	api.Get("/products", auth.ValidateJWT, Handle_get_products)
 	api.Get("/inventory", auth.ValidateJWT, Handle_get_inventory)
 
-	api.Post("/login", Handle_post_login)
+	api_admin := app.Group("/admin")
+	api_admin.Use(auth.ValidateJWT)
+
+	api_admin.Get("/users", auth.RequireRole("admin"), Handle_get_users)
+	api_admin.Get("/orders", auth.RequireRole("admin"), haandl_get_orders)
 
 	port := os.Getenv("PORT")
 	if port == "" {

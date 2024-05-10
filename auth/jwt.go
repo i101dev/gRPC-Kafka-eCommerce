@@ -9,13 +9,13 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateJWT(userID string, secretKey string) (string, error) {
+func GenerateJWT(userID, role, secretKey string) (string, error) {
 
 	claims := jwt.MapClaims{
 		"user_id": userID,
+		"role":    role,
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
 		"iat":     time.Now().Unix(),
-		"admin":   true,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -58,16 +58,21 @@ func ValidateJWT(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid JWT claims"})
 	}
 
-	username, usernameOk := (*claims)["user_id"].(string)
-	expiry, expiryOk := (*claims)["exp"].(float64)
-	admin, adminOk := (*claims)["admin"].(bool)
+	user_id, user_id_Ok := (*claims)["user_id"].(string)
+	role, roleOk := (*claims)["role"].(string)
 
-	if !usernameOk || !expiryOk || !adminOk {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Failed to extract claims"})
+	if !user_id_Ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Missing or invalid [user_id]"})
 	}
 
-	fmt.Printf("*** >>> Username: %s, Expiry: %d\n", username, int64(expiry))
-	fmt.Printf("*** >>> Admin: %+v\n", admin)
+	if !roleOk {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Missing or invalid [role]"})
+	}
+
+	c.Locals("user_id", user_id)
+	c.Locals("role", role)
+
+	fmt.Printf("*** >>> Username: %s, Role: %s\n", user_id, role)
 
 	return c.Next()
 }
@@ -83,4 +88,17 @@ func parseJWT(authHeader string, jwtSecret string) (*jwt.Token, error) {
 	})
 
 	return token, err
+}
+func RequireRole(role string) func(c *fiber.Ctx) error {
+
+	return func(c *fiber.Ctx) error {
+
+		userRole := c.Locals("role").(string)
+
+		if userRole != role {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "Access forbidden: insufficient role"})
+		}
+
+		return c.Next()
+	}
 }

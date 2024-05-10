@@ -1,24 +1,17 @@
 E-commerce-Order-Processing-Platform/
 │ 
-├── api-gateway/
+├── api/
+│   ├── handlers.go
 │   └── main.go
 │   
 ├── microservices/
-│   ├── user-service/
-│   │   └── main.go
-│   │
-│   ├── product-service/
-│   │   └── main.go
-│   │
-│   ├── order-service/
-│   │   └── main.go
-│   │
-│   └── inventory-service/
-│       └── main.go
+│   ├── user-service.go
+│   ├── product-service.go/
+│   ├── order-service.go
+│   └── inventory-service.go
 │   
 ├── auth/
-│   ├── jwt/
-│   └── middlewares/
+│   └── jwt.go
 │   
 ├── ci-cd/
 │   ├── pipelines/
@@ -27,7 +20,7 @@ E-commerce-Order-Processing-Platform/
 │   
 ├── config/
 │   ├── settings.yaml
-│   └── envs/
+│   └── .env
 │   
 ├── databases/
 │   ├── user-service.sql
