@@ -1,69 +1,76 @@
 package main
 
 import (
-	"net/http"
+	"context"
+	"fmt"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/google/uuid"
 	"github.com/i101dev/gRPC-kafka-eCommerce/auth"
-	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
+	pb "github.com/i101dev/gRPC-kafka-eCommerce/proto"
 )
 
-func registerUser(c *fiber.Ctx) error {
+func (s *UserServer) RegisterUser(ctx context.Context, req *pb.RegisterReq) (*pb.RegisterRes, error) {
 
-	db := c.Locals("db").(*gorm.DB)
+	db := GetDB()
 
 	user := new(User)
 
-	if err := c.BodyParser(&user); err != nil {
-		return c.SendStatus(http.StatusBadRequest)
-	}
-
-	hashedPassword, err := hashPassword(user.Password)
+	hashedPassword, err := hashPassword(req.Password)
 	if err != nil {
-		return c.SendStatus(http.StatusInternalServerError)
+		return &pb.RegisterRes{}, fmt.Errorf("failed to hash password")
 	}
 
+	user.Email = req.Email
+	user.Username = req.Username
 	user.CreatedAt = time.Now()
 	user.Password = hashedPassword
 	user.UUID = uuid.New().String()
 	user.Role = "customer"
 
 	if err := db.Create(&user).Error; err != nil {
-		return c.SendStatus(http.StatusBadRequest)
+		return &pb.RegisterRes{}, fmt.Errorf("failed to create user")
 	}
 
-	return c.Status(http.StatusCreated).JSON(user)
+	return &pb.RegisterRes{
+		UserId: user.UUID,
+	}, nil
 }
 
-func loginUser(c *fiber.Ctx) error {
+func (s *UserServer) AuthUser(ctx context.Context, req *pb.AuthReq) (*pb.AuthRes, error) {
 
-	db := c.Locals("db").(*gorm.DB)
+	db := GetDB()
 
-	payload := new(UserLoginParams)
 	userDat := new(User)
 
-	if err := c.BodyParser(&payload); err != nil {
-		return c.SendStatus(http.StatusBadRequest)
+	if err := db.Where("username = ?", req.Username).First(&userDat).Error; err != nil {
+		return &pb.AuthRes{}, fmt.Errorf("not authorizeed - %+v", err)
 	}
 
-	if err := db.Where("username = ?", payload.Username).First(&userDat).Error; err != nil {
-		return c.SendStatus(http.StatusUnauthorized)
-	}
-
-	if !checkPassword(userDat.Password, payload.Password) {
-		return c.SendStatus(http.StatusUnauthorized)
+	if !checkPassword(userDat.Password, req.Password) {
+		return &pb.AuthRes{}, fmt.Errorf("not authorizeed")
 	}
 
 	token, err := auth.GenerateJWT(userDat.Username, userDat.Role)
 
 	if err != nil {
-		return c.SendStatus(http.StatusInternalServerError)
+		return &pb.AuthRes{}, fmt.Errorf("failed to generate token")
 	}
 
-	return c.Status(http.StatusOK).JSON(fiber.Map{"token": token})
+	return &pb.AuthRes{
+		Token: token,
+	}, nil
+}
+
+func (s *UserServer) Test(ctx context.Context, req *pb.TestReq) (*pb.TestRes, error) {
+
+	fmt.Println("*** >>> [user-gRPC] - server test message: ", req.Msg)
+
+	return &pb.TestRes{
+		Msg: req.Msg,
+	}, nil
 }
 
 func hashPassword(password string) (string, error) {

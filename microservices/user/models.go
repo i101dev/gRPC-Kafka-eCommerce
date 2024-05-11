@@ -41,10 +41,6 @@ type User struct {
 	Orders    Orders    `gorm:"type:jsonb" json:"orders"`
 	CreatedAt time.Time `json:"created_at"`
 }
-type UserLoginParams struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
 
 func InitModels(database *gorm.DB) {
 
@@ -61,4 +57,5 @@ func InitModels(database *gorm.DB) {
 	}
 
 	fmt.Println("*** >>> Successfully initialized [models/Order.go]")
+	fmt.Println("*** >>> Successfully initialized [Postgres database]")
 }

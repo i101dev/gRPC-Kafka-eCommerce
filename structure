@@ -7,16 +7,10 @@ E-commerce-Order-Processing-Platform/
 ├── auth/
 │   └── jwt.go
 │   
-├── ci-cd/
-│   ├── pipelines/
-│   ├── scripts/
-│   └── README.md
-│   
 ├── config/
-│   ├── settings.yaml
 │   └── .env
 │   
-├── grpc/
+├── proto/
 │   ├── user-service.proto
 │   ├── product-service.proto
 │   ├── order-service.proto

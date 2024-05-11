@@ -3,24 +3,26 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"os"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
+	"google.golang.org/grpc"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	pb "github.com/i101dev/gRPC-kafka-eCommerce/proto"
 )
 
-func DatabaseMiddleware(db *gorm.DB) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		c.Locals("db", db) // Set the database instance in the Fiber context
-		return c.Next()    // Proceed to the next middleware or route handler
-	}
-}
+var (
+	userDB *gorm.DB
+)
 
-func initDB() (*gorm.DB, error) {
+func LoadDB() (*gorm.DB, error) {
+
+	if err := godotenv.Load(".env"); err != nil {
+		log.Fatalf("Error loading [user-service] .env file")
+	}
 
 	dbUser := os.Getenv("DB_USER")
 	dbPass := os.Getenv("DB_PASS")
@@ -28,7 +30,7 @@ func initDB() (*gorm.DB, error) {
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 
-	if dbUser == "" || dbPass == "" || dbName == "" || dbHost == "" {
+	if dbUser == "" || dbPass == "" || dbName == "" || dbHost == "" || dbPort == "" {
 		return nil, fmt.Errorf("incomplete database connection parameters")
 	}
 
@@ -36,56 +38,59 @@ func initDB() (*gorm.DB, error) {
 
 	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{})
 
-	if err != nil {
-		return db, fmt.Errorf("error connecting to the database: %v", err)
-	}
+	return db, err
+}
 
-	InitModels(db)
+type UserServer struct {
+	pb.UserServiceServer
+}
 
-	return db, nil
+func GetDB() *gorm.DB {
+	return userDB
 }
 
 func main() {
 
 	// --------------------------------------------------------------------------
-	// Load environment variables
-	//
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatalf("Error loading [user-service] .env file")
-	}
-
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		log.Fatal("Invalid port - not found in environment")
-	}
-
-	// --------------------------------------------------------------------------
 	// Init database
-	//
-	db, err := initDB()
 
+	db, err := LoadDB()
 	if err != nil {
-		log.Fatalf("Error connecting to [user-service] database: %v", err)
+		log.Fatalf("Error connecting to [user-service] database: %+v", err)
 	} else {
-		fmt.Println("*** >>> Successfully initialized [Postgres]")
+		userDB = db
+		InitModels(db)
 	}
-
-	// --------------------------------------------------------------------------
-	// Init Fiber
-	//
-	app := fiber.New()
-	app.Use(DatabaseMiddleware(db))
-	app.Use(recover.New())
-	app.Use(logger.New())
-	// --------------------------------------------------------------------------
-	// Routes
-	//
-	app.Post("/register", registerUser)
-	app.Post("/login", loginUser)
 
 	// --------------------------------------------------------------------------
 	// Launch user service
-	//
-	log.Fatal(app.Listen(fmt.Sprintf(":%s", port)))
+
+	SRV_HOST := os.Getenv("SRV_HOST")
+	if SRV_HOST == "" {
+		log.Fatal("Invalid [SRV_HOST] - not found in [.env]")
+	}
+
+	SRV_PORT := os.Getenv("SRV_PORT")
+	if SRV_PORT == "" {
+		log.Fatal("Invalid [SRV_PORT] - not found in [.env]")
+	}
+
+	// --------------------------------------------------------------------------
+	// Launch gRPC server
+
+	lis, err := net.Listen("tcp", ":"+SRV_PORT)
+
+	if err != nil {
+		log.Fatalf("Failed to start the [user-gRPC] %+v", err)
+	}
+
+	grpcServer := grpc.NewServer()
+
+	pb.RegisterUserServiceServer(grpcServer, &UserServer{})
+
+	log.Printf("*** >>> [user-gRPC] server started at %+v", lis.Addr())
+
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("*** >>> [user-gRPC] failed to start - %+v", err)
+	}
 }

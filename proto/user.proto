@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option go_package = './proto';
+
+package ecommerce;
+
+service UserService {
+    rpc RegisterUser (RegisterReq) returns (RegisterRes) {}
+    rpc AuthUser (AuthReq) returns (AuthRes) {}
+    rpc Test(TestReq) returns (TestRes){}
+}
+
+message RegisterReq {
+    string username = 1;
+    string password = 2;
+    string referral = 3;
+    string email = 4;
+}
+
+message RegisterRes {
+    string user_id = 1;
+}
+
+message AuthReq {
+    string username = 1;
+    string password = 2;
+}
+
+message AuthRes {
+    string token = 1;
+}
+
+message TestReq{
+    string msg = 1;
+}
+message TestRes {
+    string msg = 1;
+}

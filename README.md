@@ -53,4 +53,5 @@
 
 -   **Logging and Monitoring**: Prometheus and Grafana to track the behavior of microservices and Kafka events.
 
--   **CI/CD and Containerization**: Docker to containerize each microservice, allowing for consistent deployment and easier scaling. Implement CI/CD pipelines to automate deployment and testing.
+<!-- export PATH="$PATH:$(go env GOPATH)/bin" -->
+<!-- protoc --go_out=. --go-grpc_out=. proto/user.proto -->
