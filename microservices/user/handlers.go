@@ -23,12 +23,20 @@ func (s *UserServer) RegisterUser(ctx context.Context, req *pb.RegisterReq) (*pb
 		return &pb.RegisterRes{}, fmt.Errorf("failed to hash password")
 	}
 
+	var role string
+	switch req.Referral {
+	case "0x1":
+		role = "admin"
+	default:
+		role = "customer"
+	}
+
 	user.Email = req.Email
 	user.Username = req.Username
 	user.CreatedAt = time.Now()
 	user.Password = hashedPassword
 	user.UUID = uuid.New().String()
-	user.Role = "customer"
+	user.Role = role
 
 	if err := db.Create(&user).Error; err != nil {
 		return &pb.RegisterRes{}, fmt.Errorf("failed to create user")

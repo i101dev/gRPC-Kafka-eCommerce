@@ -18,42 +18,77 @@ import (
 )
 
 var (
+	port     string
+	adminKey string
+
 	userSrv    string
+	userConn   *grpc.ClientConn
 	userClient pb.UserServiceClient
 )
 
-func main() {
+func loadENV() {
 
 	if err := godotenv.Load(".env"); err != nil {
 		log.Fatalf("Error loading .env file")
 	}
 
-	userSrv = os.Getenv("USER_SRV")
-	userConn, err := grpc.Dial(userSrv, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	port = os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
+	adminKey = os.Getenv("ADMIN_KEY")
+	if adminKey == "" {
+		log.Fatal("Invalid [ADMIN_KEY] - not found in [.env]")
+	}
+
+	userSrv = os.Getenv("USER_SRV")
+	if userSrv == "" {
+		log.Fatal("Invalid [USER_SRV] - not found in [.env]")
+	}
+}
+
+func loadGRPC() {
+
+	// --------------------------------------------------------------------------
+	// User service
+	//
+	userConn, err := grpc.Dial(userSrv, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("Failed to dial the [user] server %v", err)
 	} else {
-		defer userConn.Close()
 		userClient = pb.NewUserServiceClient(userConn)
 	}
+}
 
-	// --------------------------------------------------------------------------
-	// INITIALIZE FIBER
-	//
+func fiberApp() *fiber.App {
+
 	app := fiber.New(fiber.Config{
-		ErrorHandler: fiberErrorHandler,
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"Fiber error": err.Error(),
+			})
+		},
 	})
 
-	// --------------------------------------------------------------------------
-	// MIDDLEWARES
-	//
 	app.Use(recover.New())
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 	}))
+
+	return app
+}
+
+func main() {
+
+	loadENV()
+	loadGRPC()
+
+	defer userConn.Close()
+
+	app := fiberApp()
 
 	// --------------------------------------------------------------------------
 	// Routers
@@ -78,16 +113,5 @@ func main() {
 
 	// --------------------------------------------------------------------------
 	// Launch server
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
 	log.Fatal(app.Listen(fmt.Sprintf(":%s", port)))
-}
-
-func fiberErrorHandler(c *fiber.Ctx, err error) error {
-	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-		"Fiber error": err.Error(),
-	})
 }
