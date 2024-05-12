@@ -26,3 +26,13 @@ func InitModels(database *gorm.DB) {
 	fmt.Println("\n*** >>> Successfully initialized [models/Order.go]")
 
 }
+
+func DropModels(database *gorm.DB) {
+
+	if err := database.Migrator().DropTable(&Order{}); err != nil {
+		fmt.Println("Error dropping Order table")
+		log.Fatal(err)
+	}
+
+	fmt.Println("*** >>> Successfully dropped Order table")
+}
