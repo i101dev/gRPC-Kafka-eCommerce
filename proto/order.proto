@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = './proto';
+
+package ecommerce;
+
+service OrderService {
+    rpc OrderTest(OrderTestReq) returns (OrderTestRes){}
+}
+
+
+message OrderTestReq{
+    string msg = 1;
+}
+message OrderTestRes {
+    string msg = 1;
+}

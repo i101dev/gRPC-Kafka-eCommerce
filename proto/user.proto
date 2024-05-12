@@ -7,7 +7,7 @@ package ecommerce;
 service UserService {
     rpc RegisterUser (RegisterReq) returns (RegisterRes) {}
     rpc AuthUser (AuthReq) returns (AuthRes) {}
-    rpc Test(TestReq) returns (TestRes){}
+    rpc UserTest(UserTestReq) returns (UserTestRes){}
 }
 
 message RegisterReq {
@@ -30,9 +30,9 @@ message AuthRes {
     string token = 1;
 }
 
-message TestReq{
+message UserTestReq{
     string msg = 1;
 }
-message TestRes {
+message UserTestRes {
     string msg = 1;
 }

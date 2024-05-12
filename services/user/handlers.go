@@ -72,11 +72,11 @@ func (s *UserServer) AuthUser(ctx context.Context, req *pb.AuthReq) (*pb.AuthRes
 	}, nil
 }
 
-func (s *UserServer) Test(ctx context.Context, req *pb.TestReq) (*pb.TestRes, error) {
+func (s *UserServer) UserTest(ctx context.Context, req *pb.UserTestReq) (*pb.UserTestRes, error) {
 
 	fmt.Println("*** >>> [user-gRPC] - server test message: ", req.Msg)
 
-	return &pb.TestRes{
+	return &pb.UserTestRes{
 		Msg: req.Msg,
 	}, nil
 }

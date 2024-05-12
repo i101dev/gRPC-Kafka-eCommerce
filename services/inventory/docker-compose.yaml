@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+    postgres-eCommerce-inventory:
+        image: postgres:latest
+        container_name: postgres-eCommerce-inventory
+        environment:
+            POSTGRES_PASSWORD: eCommerce-inventory-password
+            POSTGRES_USER: eCommerce-inventory-username
+            POSTGRES_DB: eCommerce-inventory-database
+        volumes:
+            - postgres_eCommerce_inventory:/var/lib/postgresql/data
+        ports:
+            - "5433:5432"
+
+volumes:
+    postgres_eCommerce_inventory: # Named volume to persist data

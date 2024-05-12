@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+    postgres-eCommerce-order:
+        image: postgres:latest
+        container_name: postgres-eCommerce-order
+        environment:
+            POSTGRES_PASSWORD: eCommerce-order-password
+            POSTGRES_USER: eCommerce-order-username
+            POSTGRES_DB: eCommerce-order-database
+        volumes:
+            - postgres_eCommerce_order:/var/lib/postgresql/data
+        ports:
+            - "5434:5432"
+
+volumes:
+    postgres_eCommerce_order: # Named volume to persist data

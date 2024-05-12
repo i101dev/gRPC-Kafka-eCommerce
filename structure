@@ -1,20 +1,13 @@
 E-commerce-Order-Processing-Platform/
 │ 
 ├── api/
+│   ├── .env
 │   ├── handlers.go
-│   └── main.go
+│   ├── main.go
+│   └── Makefile
 │   
 ├── auth/
 │   └── jwt.go
-│   
-├── config/
-│   └── .env
-│   
-├── proto/
-│   ├── user-service.proto
-│   ├── product-service.proto
-│   ├── order-service.proto
-│   └── inventory-service.proto
 │   
 ├── kafka/
 │   ├── topics/
@@ -40,9 +33,14 @@ E-commerce-Order-Processing-Platform/
 │   ├── order/
 │   └── inventory/
 │   
-├── monitoring/
-│   ├── prometheus/
-│   ├── grafana/
-│   └── README.md
+├── proto/
+│   ├── user-service.proto
+│   ├── product-service.proto
+│   ├── order-service.proto
+│   └── inventory-service.proto
 │   
+├── .gitignore
+├── docker-compose.yaml
+├── go.mod
+├── go.sum
 └── README.md

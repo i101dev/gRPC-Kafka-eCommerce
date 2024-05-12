@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = './proto';
+
+package ecommerce;
+
+service ProductService {
+    rpc ProductTest(ProductTestReq) returns (ProductTestRes){}
+}
+
+
+message ProductTestReq{
+    string msg = 1;
+}
+message ProductTestRes {
+    string msg = 1;
+}

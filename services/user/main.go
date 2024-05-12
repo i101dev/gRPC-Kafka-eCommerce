@@ -17,9 +17,9 @@ import (
 var (
 	userDB *gorm.DB
 
-	ADMIN_KEY string
-	SRV_HOST  string
-	SRV_PORT  string
+	ADMIN_KEY     string
+	USER_SRV_HOST string
+	USER_SRV_PORT string
 )
 
 type UserServer struct {
@@ -41,24 +41,24 @@ func loadENV() {
 		log.Fatal("Invalid [ADMIN_KEY] - not found in [.env]")
 	}
 
-	SRV_HOST = os.Getenv("SRV_HOST")
-	if SRV_HOST == "" {
-		log.Fatal("Invalid [SRV_HOST] - not found in [.env]")
+	USER_SRV_HOST = os.Getenv("USER_SRV_HOST")
+	if USER_SRV_HOST == "" {
+		log.Fatal("Invalid [USER_SRV_HOST] - not found in [.env]")
 	}
 
-	SRV_PORT = os.Getenv("SRV_PORT")
-	if SRV_PORT == "" {
-		log.Fatal("Invalid [SRV_PORT] - not found in [.env]")
+	USER_SRV_PORT = os.Getenv("USER_SRV_PORT")
+	if USER_SRV_PORT == "" {
+		log.Fatal("Invalid [USER_SRV_PORT] - not found in [.env]")
 	}
 }
 
 func loadDB() {
 
-	dbUser := os.Getenv("DB_USER")
-	dbPass := os.Getenv("DB_PASS")
-	dbName := os.Getenv("DB_NAME")
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
+	dbUser := os.Getenv("USER_DB_USER")
+	dbPass := os.Getenv("USER_DB_PASS")
+	dbHost := os.Getenv("USER_DB_HOST")
+	dbPort := os.Getenv("USER_DB_PORT")
+	dbName := os.Getenv("USER_DB_NAME")
 
 	if dbUser == "" || dbPass == "" || dbName == "" || dbHost == "" || dbPort == "" {
 		log.Fatalf("incomplete database connection parameters")
@@ -78,7 +78,7 @@ func loadDB() {
 
 func loadSRV() {
 
-	lis, err := net.Listen("tcp", ":"+SRV_PORT)
+	lis, err := net.Listen("tcp", ":"+USER_SRV_PORT)
 
 	if err != nil {
 		log.Fatalf("Failed to start the [user-gRPC] %+v", err)

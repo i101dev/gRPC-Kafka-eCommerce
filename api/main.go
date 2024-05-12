@@ -9,17 +9,28 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/i101dev/gRPC-kafka-eCommerce/auth"
+	pb "github.com/i101dev/gRPC-kafka-eCommerce/proto"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-
-	"github.com/i101dev/gRPC-kafka-eCommerce/auth"
-	pb "github.com/i101dev/gRPC-kafka-eCommerce/proto"
 )
 
 var (
 	port     string
 	adminKey string
+
+	inventorySrv    string
+	inventoryConn   *grpc.ClientConn
+	inventoryClient pb.InventoryServiceClient
+
+	orderSrv    string
+	orderConn   *grpc.ClientConn
+	orderClient pb.OrderServiceClient
+
+	productSrv    string
+	productConn   *grpc.ClientConn
+	productClient pb.ProductServiceClient
 
 	userSrv    string
 	userConn   *grpc.ClientConn
@@ -42,6 +53,18 @@ func loadENV() {
 		log.Fatal("Invalid [ADMIN_KEY] - not found in [.env]")
 	}
 
+	inventorySrv = os.Getenv("INVENTORY_SRV")
+	if inventorySrv == "" {
+		log.Fatal("Invalid [INVENTORY_SRV] - not found in [.env]")
+	}
+	orderSrv = os.Getenv("ORDER_SRV")
+	if orderSrv == "" {
+		log.Fatal("Invalid [ORDER_SRV] - not found in [.env]")
+	}
+	productSrv = os.Getenv("PRODUCT_SRV")
+	if productSrv == "" {
+		log.Fatal("Invalid [PRODUCT_SRV] - not found in [.env]")
+	}
 	userSrv = os.Getenv("USER_SRV")
 	if userSrv == "" {
 		log.Fatal("Invalid [USER_SRV] - not found in [.env]")
@@ -51,7 +74,37 @@ func loadENV() {
 func loadGRPC() {
 
 	// --------------------------------------------------------------------------
-	// User service
+	// inventory service
+	//
+	inventoryConn, err := grpc.Dial(inventorySrv, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("Failed to dial the [inventory] server %v", err)
+	} else {
+		inventoryClient = pb.NewInventoryServiceClient(inventoryConn)
+	}
+
+	// --------------------------------------------------------------------------
+	// order service
+	//
+	orderConn, err := grpc.Dial(orderSrv, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("Failed to dial the [order] server %v", err)
+	} else {
+		orderClient = pb.NewOrderServiceClient(orderConn)
+	}
+
+	// --------------------------------------------------------------------------
+	// inventory service
+	//
+	productConn, err := grpc.Dial(productSrv, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("Failed to dial the [product] server %v", err)
+	} else {
+		productClient = pb.NewProductServiceClient(productConn)
+	}
+
+	// --------------------------------------------------------------------------
+	// user service
 	//
 	userConn, err := grpc.Dial(userSrv, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -86,30 +139,37 @@ func main() {
 	loadENV()
 	loadGRPC()
 
+	defer inventoryConn.Close()
+	defer orderConn.Close()
+	defer productConn.Close()
 	defer userConn.Close()
 
 	app := fiberApp()
 
 	// --------------------------------------------------------------------------
 	// Routers
-	app.Get("/", Handle_get_index)
-	app.Post("/test", POST_user_test)
-	app.Post("/login", POST_user_auth)
-	app.Post("/register", POST_user_register)
+	app.Get("/", GET_index)
+	app.Post("/inventory/test", POST_inventory_test)
+	app.Post("/order/test", POST_order_test)
+	app.Post("/product/test", POST_product_test)
+	app.Post("/user/test", POST_user_test)
+
+	app.Post("/auth", POST_AuthUser)
+	app.Post("/register", POST_RegisterUser)
 
 	// --------------------------------------------------------------------------
 	// User API
 	api_user := app.Group("/user")
 	api_user.Use(auth.ValidateJWT)
-	api_user.Get("/products", Handle_get_products)
-	api_user.Get("/inventory", Handle_get_inventory)
+	api_user.Get("/products", GET_products)
+	api_user.Get("/inventory", GET_inventory)
 
 	// --------------------------------------------------------------------------
 	// Admin API
 	api_admin := app.Group("/admin")
 	api_admin.Use(auth.ValidateJWT)
-	api_admin.Get("/users", auth.RequireRole("admin"), Handle_get_users)
-	api_admin.Get("/orders", auth.RequireRole("admin"), Handle_get_orders)
+	api_admin.Get("/users", auth.RequireRole("admin"), GET_users)
+	api_admin.Get("/orders", auth.RequireRole("admin"), GET_orders)
 
 	// --------------------------------------------------------------------------
 	// Launch server

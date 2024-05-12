@@ -3,6 +3,7 @@ version: "3.8"
 services:
     postgres-eCommerce-product:
         image: postgres:latest
+        container_name: postgres-eCommerce-product
         environment:
             POSTGRES_PASSWORD: eCommerce-product-password
             POSTGRES_USER: eCommerce-product-username
@@ -10,7 +11,7 @@ services:
         volumes:
             - postgres_eCommerce_product:/var/lib/postgresql/data
         ports:
-            - "5433:5432"
+            - "5435:5432"
 
 volumes:
     postgres_eCommerce_product: # Named volume to persist data

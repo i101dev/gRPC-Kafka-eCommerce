@@ -21,7 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	UserService_RegisterUser_FullMethodName = "/ecommerce.UserService/RegisterUser"
 	UserService_AuthUser_FullMethodName     = "/ecommerce.UserService/AuthUser"
-	UserService_Test_FullMethodName         = "/ecommerce.UserService/Test"
+	UserService_UserTest_FullMethodName     = "/ecommerce.UserService/UserTest"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -30,7 +30,7 @@ const (
 type UserServiceClient interface {
 	RegisterUser(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterRes, error)
 	AuthUser(ctx context.Context, in *AuthReq, opts ...grpc.CallOption) (*AuthRes, error)
-	Test(ctx context.Context, in *TestReq, opts ...grpc.CallOption) (*TestRes, error)
+	UserTest(ctx context.Context, in *UserTestReq, opts ...grpc.CallOption) (*UserTestRes, error)
 }
 
 type userServiceClient struct {
@@ -59,9 +59,9 @@ func (c *userServiceClient) AuthUser(ctx context.Context, in *AuthReq, opts ...g
 	return out, nil
 }
 
-func (c *userServiceClient) Test(ctx context.Context, in *TestReq, opts ...grpc.CallOption) (*TestRes, error) {
-	out := new(TestRes)
-	err := c.cc.Invoke(ctx, UserService_Test_FullMethodName, in, out, opts...)
+func (c *userServiceClient) UserTest(ctx context.Context, in *UserTestReq, opts ...grpc.CallOption) (*UserTestRes, error) {
+	out := new(UserTestRes)
+	err := c.cc.Invoke(ctx, UserService_UserTest_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (c *userServiceClient) Test(ctx context.Context, in *TestReq, opts ...grpc.
 type UserServiceServer interface {
 	RegisterUser(context.Context, *RegisterReq) (*RegisterRes, error)
 	AuthUser(context.Context, *AuthReq) (*AuthRes, error)
-	Test(context.Context, *TestReq) (*TestRes, error)
+	UserTest(context.Context, *UserTestReq) (*UserTestRes, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -88,8 +88,8 @@ func (UnimplementedUserServiceServer) RegisterUser(context.Context, *RegisterReq
 func (UnimplementedUserServiceServer) AuthUser(context.Context, *AuthReq) (*AuthRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthUser not implemented")
 }
-func (UnimplementedUserServiceServer) Test(context.Context, *TestReq) (*TestRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Test not implemented")
+func (UnimplementedUserServiceServer) UserTest(context.Context, *UserTestReq) (*UserTestRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserTest not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -140,20 +140,20 @@ func _UserService_AuthUser_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_Test_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TestReq)
+func _UserService_UserTest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserTestReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).Test(ctx, in)
+		return srv.(UserServiceServer).UserTest(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_Test_FullMethodName,
+		FullMethod: UserService_UserTest_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).Test(ctx, req.(*TestReq))
+		return srv.(UserServiceServer).UserTest(ctx, req.(*UserTestReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -174,8 +174,8 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_AuthUser_Handler,
 		},
 		{
-			MethodName: "Test",
-			Handler:    _UserService_Test_Handler,
+			MethodName: "UserTest",
+			Handler:    _UserService_UserTest_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
