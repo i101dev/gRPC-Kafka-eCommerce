@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -22,35 +21,14 @@ func parseError(err error) map[string]interface{} {
 
 }
 
+func GET_index(c *fiber.Ctx) error {
+	return c.SendString("Welcome to the E-commerce Order Processing Platform")
+}
+
 // --------------------------------------------------------------------------
 // Testing
-func POST_inventory_test(c *fiber.Ctx) error {
+// --------------------------------------------------------------------------
 
-	var request struct {
-		Msg string `json:"msg"`
-	}
-
-	fmt.Println("Chk - 1")
-
-	if err := c.BodyParser(&request); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request format"})
-	}
-
-	fmt.Println("Chk - 2")
-	testReq := &pb.InventoryTestReq{
-		Msg: request.Msg,
-	}
-
-	testRes, testErr := inventoryClient.InventoryTest(context.Background(), testReq)
-
-	fmt.Println("Chk - 3")
-	if testErr != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(parseError(testErr))
-	}
-
-	fmt.Println("Chk - 4")
-	return c.JSON(testRes)
-}
 func POST_order_test(c *fiber.Ctx) error {
 
 	var request struct {
@@ -120,9 +98,11 @@ func POST_user_test(c *fiber.Ctx) error {
 
 // --------------------------------------------------------------------------
 // User handlers
+// --------------------------------------------------------------------------
 
-func GET_index(c *fiber.Ctx) error {
-	return c.SendString("Welcome to the E-commerce Order Processing Platform")
+func GET_users(c *fiber.Ctx) error {
+	// Proxy to user-service
+	return c.SendStatus(fiber.StatusNotImplemented)
 }
 
 func POST_AuthUser(c *fiber.Ctx) error {
@@ -175,13 +155,10 @@ func POST_RegisterUser(c *fiber.Ctx) error {
 	return c.JSON(registerRes)
 }
 
-func GET_users(c *fiber.Ctx) error {
-	// Proxy to user-service
-	return c.SendStatus(fiber.StatusNotImplemented)
-}
-
 // --------------------------------------------------------------------------
 // Product handlers
+// --------------------------------------------------------------------------
+
 func GET_products(c *fiber.Ctx) error {
 	// Proxy to product-service
 	return c.SendStatus(fiber.StatusNotImplemented)
@@ -189,6 +166,8 @@ func GET_products(c *fiber.Ctx) error {
 
 // --------------------------------------------------------------------------
 // Order handlers
+// --------------------------------------------------------------------------
+
 func GET_orders(c *fiber.Ctx) error {
 	// Proxy to order-service
 	return c.SendStatus(fiber.StatusNotImplemented)
@@ -196,6 +175,8 @@ func GET_orders(c *fiber.Ctx) error {
 
 // --------------------------------------------------------------------------
 // Inventory handlers
+// --------------------------------------------------------------------------
+
 func GET_inventory(c *fiber.Ctx) error {
 	// Proxy to inventory-service
 	return c.SendStatus(fiber.StatusNotImplemented)

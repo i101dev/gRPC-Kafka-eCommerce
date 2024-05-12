@@ -20,10 +20,6 @@ var (
 	port     string
 	adminKey string
 
-	inventorySrv    string
-	inventoryConn   *grpc.ClientConn
-	inventoryClient pb.InventoryServiceClient
-
 	orderSrv    string
 	orderConn   *grpc.ClientConn
 	orderClient pb.OrderServiceClient
@@ -53,10 +49,6 @@ func loadENV() {
 		log.Fatal("Invalid [ADMIN_KEY] - not found in [.env]")
 	}
 
-	inventorySrv = os.Getenv("INVENTORY_SRV")
-	if inventorySrv == "" {
-		log.Fatal("Invalid [INVENTORY_SRV] - not found in [.env]")
-	}
 	orderSrv = os.Getenv("ORDER_SRV")
 	if orderSrv == "" {
 		log.Fatal("Invalid [ORDER_SRV] - not found in [.env]")
@@ -72,16 +64,6 @@ func loadENV() {
 }
 
 func loadGRPC() {
-
-	// --------------------------------------------------------------------------
-	// inventory service
-	//
-	inventoryConn, err := grpc.Dial(inventorySrv, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatalf("Failed to dial the [inventory] server %v", err)
-	} else {
-		inventoryClient = pb.NewInventoryServiceClient(inventoryConn)
-	}
 
 	// --------------------------------------------------------------------------
 	// order service
@@ -139,7 +121,6 @@ func main() {
 	loadENV()
 	loadGRPC()
 
-	defer inventoryConn.Close()
 	defer orderConn.Close()
 	defer productConn.Close()
 	defer userConn.Close()
@@ -149,7 +130,6 @@ func main() {
 	// --------------------------------------------------------------------------
 	// Routers
 	app.Get("/", GET_index)
-	app.Post("/inventory/test", POST_inventory_test)
 	app.Post("/order/test", POST_order_test)
 	app.Post("/product/test", POST_product_test)
 	app.Post("/user/test", POST_user_test)

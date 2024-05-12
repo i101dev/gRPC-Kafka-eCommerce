@@ -23,15 +23,19 @@ E-commerce-Order-Processing-Platform/
 │   │   ├── main.go
 │   │   └── models.go
 │   │
-│   ├── product/
+│   ├── order/
 │   │   ├── .env
 │   │   ├── docker-compose.yaml
 │   │   ├── handlers.go
 │   │   ├── main.go
 │   │   └── models.go
 │   │
-│   ├── order/
-│   └── inventory/
+│   └── product/
+│       ├── .env
+│       ├── docker-compose.yaml
+│       ├── handlers.go
+│       ├── main.go
+│       └── models.go
 │   
 ├── proto/
 │   ├── user-service.proto
@@ -40,7 +44,7 @@ E-commerce-Order-Processing-Platform/
 │   └── inventory-service.proto
 │   
 ├── .gitignore
-├── docker-compose.yaml
 ├── go.mod
 ├── go.sum
+├── Makefile
 └── README.md
