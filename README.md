@@ -4,7 +4,7 @@
 
 1. **Microservices Architecture**:
 
-    - Multiple microservices: User Service, Order Service, Product Service, and Inventory Service. This architecture allows for scalability, flexibility, and easier management.
+    - Multiple microservices: User Service, Order Service, Product Service. This architecture allows for scalability, flexibility, and easier management.
 
 2. **Fiber for HTTP API Gateway**:
 
@@ -42,16 +42,9 @@
     - Uses Kafka to publish "Order Placed" events and listens to Kafka topics for inventory changes.
     - Communicates with Product Service via gRPC to fetch product information for order processing.
 
-4. **Inventory Service**:
-    - Manages inventory levels and adjusts stock based on orders.
-    - Listens to Kafka topics for order-related events and publishes "Inventory Changed" events.
-    - Provides REST endpoints for inventory management via Fiber.
-
 ---
 
 -   **Authentication and Authorization**: JWT-based authentication and authorization to ensure secure access to the API gateway and microservices.
-
--   **Logging and Monitoring**: Prometheus and Grafana to track the behavior of microservices and Kafka events.
 
 <!-- export PATH="$PATH:$(go env GOPATH)/bin" -->
 <!-- protoc --go_out=. --go-grpc_out=. proto/user.proto -->
