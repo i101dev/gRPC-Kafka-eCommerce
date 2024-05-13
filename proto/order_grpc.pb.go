@@ -19,7 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	OrderService_OrderTest_FullMethodName = "/ecommerce.OrderService/OrderTest"
+	OrderService_OrderTest_FullMethodName        = "/ecommerce.OrderService/OrderTest"
+	OrderService_OrderConn_FullMethodName        = "/ecommerce.OrderService/OrderConn"
+	OrderService_OrderPingProduct_FullMethodName = "/ecommerce.OrderService/OrderPingProduct"
+	OrderService_OrderPingUser_FullMethodName    = "/ecommerce.OrderService/OrderPingUser"
+	OrderService_OrderPing_FullMethodName        = "/ecommerce.OrderService/OrderPing"
 )
 
 // OrderServiceClient is the client API for OrderService service.
@@ -27,6 +31,10 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type OrderServiceClient interface {
 	OrderTest(ctx context.Context, in *OrderTestReq, opts ...grpc.CallOption) (*OrderTestRes, error)
+	OrderConn(ctx context.Context, in *OrderConnReq, opts ...grpc.CallOption) (*OrderConnRes, error)
+	OrderPingProduct(ctx context.Context, in *OrderPingProductReq, opts ...grpc.CallOption) (*OrderPingProductRes, error)
+	OrderPingUser(ctx context.Context, in *OrderPingUserReq, opts ...grpc.CallOption) (*OrderPingUserRes, error)
+	OrderPing(ctx context.Context, in *OrderPingReq, opts ...grpc.CallOption) (*OrderPingRes, error)
 }
 
 type orderServiceClient struct {
@@ -46,11 +54,51 @@ func (c *orderServiceClient) OrderTest(ctx context.Context, in *OrderTestReq, op
 	return out, nil
 }
 
+func (c *orderServiceClient) OrderConn(ctx context.Context, in *OrderConnReq, opts ...grpc.CallOption) (*OrderConnRes, error) {
+	out := new(OrderConnRes)
+	err := c.cc.Invoke(ctx, OrderService_OrderConn_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *orderServiceClient) OrderPingProduct(ctx context.Context, in *OrderPingProductReq, opts ...grpc.CallOption) (*OrderPingProductRes, error) {
+	out := new(OrderPingProductRes)
+	err := c.cc.Invoke(ctx, OrderService_OrderPingProduct_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *orderServiceClient) OrderPingUser(ctx context.Context, in *OrderPingUserReq, opts ...grpc.CallOption) (*OrderPingUserRes, error) {
+	out := new(OrderPingUserRes)
+	err := c.cc.Invoke(ctx, OrderService_OrderPingUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *orderServiceClient) OrderPing(ctx context.Context, in *OrderPingReq, opts ...grpc.CallOption) (*OrderPingRes, error) {
+	out := new(OrderPingRes)
+	err := c.cc.Invoke(ctx, OrderService_OrderPing_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OrderServiceServer is the server API for OrderService service.
 // All implementations must embed UnimplementedOrderServiceServer
 // for forward compatibility
 type OrderServiceServer interface {
 	OrderTest(context.Context, *OrderTestReq) (*OrderTestRes, error)
+	OrderConn(context.Context, *OrderConnReq) (*OrderConnRes, error)
+	OrderPingProduct(context.Context, *OrderPingProductReq) (*OrderPingProductRes, error)
+	OrderPingUser(context.Context, *OrderPingUserReq) (*OrderPingUserRes, error)
+	OrderPing(context.Context, *OrderPingReq) (*OrderPingRes, error)
 	mustEmbedUnimplementedOrderServiceServer()
 }
 
@@ -60,6 +108,18 @@ type UnimplementedOrderServiceServer struct {
 
 func (UnimplementedOrderServiceServer) OrderTest(context.Context, *OrderTestReq) (*OrderTestRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method OrderTest not implemented")
+}
+func (UnimplementedOrderServiceServer) OrderConn(context.Context, *OrderConnReq) (*OrderConnRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OrderConn not implemented")
+}
+func (UnimplementedOrderServiceServer) OrderPingProduct(context.Context, *OrderPingProductReq) (*OrderPingProductRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OrderPingProduct not implemented")
+}
+func (UnimplementedOrderServiceServer) OrderPingUser(context.Context, *OrderPingUserReq) (*OrderPingUserRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OrderPingUser not implemented")
+}
+func (UnimplementedOrderServiceServer) OrderPing(context.Context, *OrderPingReq) (*OrderPingRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OrderPing not implemented")
 }
 func (UnimplementedOrderServiceServer) mustEmbedUnimplementedOrderServiceServer() {}
 
@@ -92,6 +152,78 @@ func _OrderService_OrderTest_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OrderService_OrderConn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OrderConnReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServiceServer).OrderConn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OrderService_OrderConn_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServiceServer).OrderConn(ctx, req.(*OrderConnReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OrderService_OrderPingProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OrderPingProductReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServiceServer).OrderPingProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OrderService_OrderPingProduct_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServiceServer).OrderPingProduct(ctx, req.(*OrderPingProductReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OrderService_OrderPingUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OrderPingUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServiceServer).OrderPingUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OrderService_OrderPingUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServiceServer).OrderPingUser(ctx, req.(*OrderPingUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OrderService_OrderPing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OrderPingReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServiceServer).OrderPing(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OrderService_OrderPing_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServiceServer).OrderPing(ctx, req.(*OrderPingReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OrderService_ServiceDesc is the grpc.ServiceDesc for OrderService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +234,22 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "OrderTest",
 			Handler:    _OrderService_OrderTest_Handler,
+		},
+		{
+			MethodName: "OrderConn",
+			Handler:    _OrderService_OrderConn_Handler,
+		},
+		{
+			MethodName: "OrderPingProduct",
+			Handler:    _OrderService_OrderPingProduct_Handler,
+		},
+		{
+			MethodName: "OrderPingUser",
+			Handler:    _OrderService_OrderPingUser_Handler,
+		},
+		{
+			MethodName: "OrderPing",
+			Handler:    _OrderService_OrderPing_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

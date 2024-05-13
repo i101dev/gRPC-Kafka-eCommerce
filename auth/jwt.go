@@ -9,6 +9,10 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+func errNoAuth(c *fiber.Ctx, msg string) error {
+	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": msg})
+}
+
 func GenerateJWT(userID string, role string) (string, error) {
 
 	secretKey := os.Getenv("JWT_SECRET")
@@ -38,39 +42,38 @@ func ValidateJWT(c *fiber.Ctx) error {
 	authHeader := c.Get("Authorization")
 
 	if authHeader == "" {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Missing Authorization header"})
+		return errNoAuth(c, "Missing Authorization header")
 	}
 
 	if len(authHeader) < len("Bearer ") {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid Authorization format"})
+		return errNoAuth(c, "Missing Authorization format")
 	}
 
 	token, err := parseJWT(authHeader, jwtSecret)
 
 	if err != nil {
-		fmt.Printf("JWT parse error: %v\n", err)
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid JWT"})
+		return errNoAuth(c, "Invalid JWT")
 	}
 
 	if !token.Valid {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid JWT"})
+		return errNoAuth(c, "Invalid JWT")
 	}
 
 	claims, ok := token.Claims.(*jwt.MapClaims)
 
 	if !ok {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid JWT claims"})
+		return errNoAuth(c, "Invalid JWT claims")
 	}
 
 	user_id, user_id_Ok := (*claims)["user_id"].(string)
 	role, roleOk := (*claims)["role"].(string)
 
 	if !user_id_Ok {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Missing or invalid [user_id]"})
+		return errNoAuth(c, "Missing or invalid [user_id]")
 	}
 
 	if !roleOk {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Missing or invalid [role]"})
+		return errNoAuth(c, "Missing or invalid [role]")
 	}
 
 	c.Locals("user_id", user_id)

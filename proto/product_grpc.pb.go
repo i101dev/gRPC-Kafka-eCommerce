@@ -19,7 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ProductService_ProductTest_FullMethodName = "/ecommerce.ProductService/ProductTest"
+	ProductService_ProductTest_FullMethodName      = "/ecommerce.ProductService/ProductTest"
+	ProductService_ProductConn_FullMethodName      = "/ecommerce.ProductService/ProductConn"
+	ProductService_ProductPingOrder_FullMethodName = "/ecommerce.ProductService/ProductPingOrder"
+	ProductService_ProductPingUser_FullMethodName  = "/ecommerce.ProductService/ProductPingUser"
+	ProductService_ProductPing_FullMethodName      = "/ecommerce.ProductService/ProductPing"
 )
 
 // ProductServiceClient is the client API for ProductService service.
@@ -27,6 +31,10 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductServiceClient interface {
 	ProductTest(ctx context.Context, in *ProductTestReq, opts ...grpc.CallOption) (*ProductTestRes, error)
+	ProductConn(ctx context.Context, in *ProductConnReq, opts ...grpc.CallOption) (*ProductConnRes, error)
+	ProductPingOrder(ctx context.Context, in *ProductPingOrderReq, opts ...grpc.CallOption) (*ProductPingOrderRes, error)
+	ProductPingUser(ctx context.Context, in *ProductPingUserReq, opts ...grpc.CallOption) (*ProductPingUserRes, error)
+	ProductPing(ctx context.Context, in *ProductPingReq, opts ...grpc.CallOption) (*ProductPingRes, error)
 }
 
 type productServiceClient struct {
@@ -46,11 +54,51 @@ func (c *productServiceClient) ProductTest(ctx context.Context, in *ProductTestR
 	return out, nil
 }
 
+func (c *productServiceClient) ProductConn(ctx context.Context, in *ProductConnReq, opts ...grpc.CallOption) (*ProductConnRes, error) {
+	out := new(ProductConnRes)
+	err := c.cc.Invoke(ctx, ProductService_ProductConn_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) ProductPingOrder(ctx context.Context, in *ProductPingOrderReq, opts ...grpc.CallOption) (*ProductPingOrderRes, error) {
+	out := new(ProductPingOrderRes)
+	err := c.cc.Invoke(ctx, ProductService_ProductPingOrder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) ProductPingUser(ctx context.Context, in *ProductPingUserReq, opts ...grpc.CallOption) (*ProductPingUserRes, error) {
+	out := new(ProductPingUserRes)
+	err := c.cc.Invoke(ctx, ProductService_ProductPingUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) ProductPing(ctx context.Context, in *ProductPingReq, opts ...grpc.CallOption) (*ProductPingRes, error) {
+	out := new(ProductPingRes)
+	err := c.cc.Invoke(ctx, ProductService_ProductPing_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductServiceServer is the server API for ProductService service.
 // All implementations must embed UnimplementedProductServiceServer
 // for forward compatibility
 type ProductServiceServer interface {
 	ProductTest(context.Context, *ProductTestReq) (*ProductTestRes, error)
+	ProductConn(context.Context, *ProductConnReq) (*ProductConnRes, error)
+	ProductPingOrder(context.Context, *ProductPingOrderReq) (*ProductPingOrderRes, error)
+	ProductPingUser(context.Context, *ProductPingUserReq) (*ProductPingUserRes, error)
+	ProductPing(context.Context, *ProductPingReq) (*ProductPingRes, error)
 	mustEmbedUnimplementedProductServiceServer()
 }
 
@@ -60,6 +108,18 @@ type UnimplementedProductServiceServer struct {
 
 func (UnimplementedProductServiceServer) ProductTest(context.Context, *ProductTestReq) (*ProductTestRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProductTest not implemented")
+}
+func (UnimplementedProductServiceServer) ProductConn(context.Context, *ProductConnReq) (*ProductConnRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProductConn not implemented")
+}
+func (UnimplementedProductServiceServer) ProductPingOrder(context.Context, *ProductPingOrderReq) (*ProductPingOrderRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProductPingOrder not implemented")
+}
+func (UnimplementedProductServiceServer) ProductPingUser(context.Context, *ProductPingUserReq) (*ProductPingUserRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProductPingUser not implemented")
+}
+func (UnimplementedProductServiceServer) ProductPing(context.Context, *ProductPingReq) (*ProductPingRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProductPing not implemented")
 }
 func (UnimplementedProductServiceServer) mustEmbedUnimplementedProductServiceServer() {}
 
@@ -92,6 +152,78 @@ func _ProductService_ProductTest_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductService_ProductConn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProductConnReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).ProductConn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_ProductConn_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).ProductConn(ctx, req.(*ProductConnReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_ProductPingOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProductPingOrderReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).ProductPingOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_ProductPingOrder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).ProductPingOrder(ctx, req.(*ProductPingOrderReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_ProductPingUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProductPingUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).ProductPingUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_ProductPingUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).ProductPingUser(ctx, req.(*ProductPingUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_ProductPing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProductPingReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).ProductPing(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_ProductPing_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).ProductPing(ctx, req.(*ProductPingReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProductService_ServiceDesc is the grpc.ServiceDesc for ProductService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +234,22 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ProductTest",
 			Handler:    _ProductService_ProductTest_Handler,
+		},
+		{
+			MethodName: "ProductConn",
+			Handler:    _ProductService_ProductConn_Handler,
+		},
+		{
+			MethodName: "ProductPingOrder",
+			Handler:    _ProductService_ProductPingOrder_Handler,
+		},
+		{
+			MethodName: "ProductPingUser",
+			Handler:    _ProductService_ProductPingUser_Handler,
+		},
+		{
+			MethodName: "ProductPing",
+			Handler:    _ProductService_ProductPing_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

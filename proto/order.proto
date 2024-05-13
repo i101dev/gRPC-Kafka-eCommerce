@@ -6,9 +6,49 @@ package ecommerce;
 
 service OrderService {
     rpc OrderTest(OrderTestReq) returns (OrderTestRes){}
+    rpc OrderConn(OrderConnReq) returns (OrderConnRes){}
+    
+    rpc OrderPingProduct(OrderPingProductReq) returns (OrderPingProductRes){}
+    rpc OrderPingUser(OrderPingUserReq) returns (OrderPingUserRes){}
+    rpc OrderPing(OrderPingReq) returns (OrderPingRes){}
 }
 
+// --------------------------------------------------------------------------
+// Ping routes
+//
+message OrderPingProductReq{
+    string msg = 1;
+}
+message OrderPingProductRes{
+    string msg = 1;
+}
+message OrderPingUserReq{
+    string msg = 1;
+}
+message OrderPingUserRes{
+    string msg = 1;
+}
+message OrderPingReq{
+    string msg = 1;
+}
+message OrderPingRes{
+    string msg = 1;
+}
 
+// --------------------------------------------------------------------------
+// Connections
+//
+message OrderConnReq{
+    string productSrv = 1;
+    string userSrv = 2;
+}
+message OrderConnRes{
+    string msg = 1;
+}
+
+// --------------------------------------------------------------------------
+// Test
+//
 message OrderTestReq{
     string msg = 1;
 }

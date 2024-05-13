@@ -5,31 +5,77 @@ option go_package = './proto';
 package ecommerce;
 
 service UserService {
-    rpc RegisterUser (RegisterReq) returns (RegisterRes) {}
-    rpc AuthUser (AuthReq) returns (AuthRes) {}
+    rpc UserJoin (UserJoinReq) returns (UserJoinRes) {}
+    rpc UserAuth(UserAuthReq) returns (UserAuthRes) {}
     rpc UserTest(UserTestReq) returns (UserTestRes){}
+    rpc UserConn(UserConnReq) returns (UserConnRes){}
+    
+    rpc UserPingProduct(UserPingProductReq) returns (UserPingProductRes){}
+    rpc UserPingOrder(UserPingOrderReq) returns (UserPingOrderRes){}
+    rpc UserPing(UserPingReq) returns (UserPingRes){}
 }
 
-message RegisterReq {
+// --------------------------------------------------------------------------
+// Ping routes
+//
+message UserPingProductReq{
+    string msg = 1;
+}
+message UserPingProductRes{
+    string msg = 1;
+}
+message UserPingOrderReq{
+    string msg = 1;
+}
+message UserPingOrderRes{
+    string msg = 1;
+}
+message UserPingReq{
+    string msg = 1;
+}
+message UserPingRes{
+    string msg = 1;
+}
+
+// --------------------------------------------------------------------------
+// Connections
+//
+message UserConnReq{
+    string orderSrv = 1;
+    string productSrv = 2;
+}
+message UserConnRes{
+    string msg = 1;
+}
+
+// --------------------------------------------------------------------------
+// Register
+//
+message UserJoinReq {
     string username = 1;
     string password = 2;
     string referral = 3;
     string email = 4;
 }
 
-message RegisterRes {
+message UserJoinRes {
     string user_id = 1;
 }
 
-message AuthReq {
+// --------------------------------------------------------------------------
+// Authentication
+//
+message UserAuthReq {
     string username = 1;
     string password = 2;
 }
-
-message AuthRes {
+message UserAuthRes {
     string token = 1;
 }
 
+// --------------------------------------------------------------------------
+// Test
+//
 message UserTestReq{
     string msg = 1;
 }

@@ -6,9 +6,49 @@ package ecommerce;
 
 service ProductService {
     rpc ProductTest(ProductTestReq) returns (ProductTestRes){}
+    rpc ProductConn(ProductConnReq) returns (ProductConnRes){}
+    
+    rpc ProductPingOrder(ProductPingOrderReq) returns (ProductPingOrderRes){}
+    rpc ProductPingUser(ProductPingUserReq) returns (ProductPingUserRes){}
+    rpc ProductPing(ProductPingReq) returns (ProductPingRes){}
 }
 
+// --------------------------------------------------------------------------
+// Ping routes
+//
+message ProductPingOrderReq{
+    string msg = 1;
+}
+message ProductPingOrderRes{
+    string msg = 1;
+}
+message ProductPingUserReq{
+    string msg = 1;
+}
+message ProductPingUserRes{
+    string msg = 1;
+}
+message ProductPingReq{
+    string msg = 1;
+}
+message ProductPingRes{
+    string msg = 1;
+}
 
+// --------------------------------------------------------------------------
+// Connections
+//
+message ProductConnReq{
+    string orderSrv = 1;
+    string userSrv = 2;
+}
+message ProductConnRes{
+    string msg = 1;
+}
+
+// --------------------------------------------------------------------------
+// Test
+//
 message ProductTestReq{
     string msg = 1;
 }

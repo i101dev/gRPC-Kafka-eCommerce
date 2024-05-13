@@ -19,18 +19,26 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserService_RegisterUser_FullMethodName = "/ecommerce.UserService/RegisterUser"
-	UserService_AuthUser_FullMethodName     = "/ecommerce.UserService/AuthUser"
-	UserService_UserTest_FullMethodName     = "/ecommerce.UserService/UserTest"
+	UserService_UserJoin_FullMethodName        = "/ecommerce.UserService/UserJoin"
+	UserService_UserAuth_FullMethodName        = "/ecommerce.UserService/UserAuth"
+	UserService_UserTest_FullMethodName        = "/ecommerce.UserService/UserTest"
+	UserService_UserConn_FullMethodName        = "/ecommerce.UserService/UserConn"
+	UserService_UserPingProduct_FullMethodName = "/ecommerce.UserService/UserPingProduct"
+	UserService_UserPingOrder_FullMethodName   = "/ecommerce.UserService/UserPingOrder"
+	UserService_UserPing_FullMethodName        = "/ecommerce.UserService/UserPing"
 )
 
 // UserServiceClient is the client API for UserService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	RegisterUser(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterRes, error)
-	AuthUser(ctx context.Context, in *AuthReq, opts ...grpc.CallOption) (*AuthRes, error)
+	UserJoin(ctx context.Context, in *UserJoinReq, opts ...grpc.CallOption) (*UserJoinRes, error)
+	UserAuth(ctx context.Context, in *UserAuthReq, opts ...grpc.CallOption) (*UserAuthRes, error)
 	UserTest(ctx context.Context, in *UserTestReq, opts ...grpc.CallOption) (*UserTestRes, error)
+	UserConn(ctx context.Context, in *UserConnReq, opts ...grpc.CallOption) (*UserConnRes, error)
+	UserPingProduct(ctx context.Context, in *UserPingProductReq, opts ...grpc.CallOption) (*UserPingProductRes, error)
+	UserPingOrder(ctx context.Context, in *UserPingOrderReq, opts ...grpc.CallOption) (*UserPingOrderRes, error)
+	UserPing(ctx context.Context, in *UserPingReq, opts ...grpc.CallOption) (*UserPingRes, error)
 }
 
 type userServiceClient struct {
@@ -41,18 +49,18 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) RegisterUser(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterRes, error) {
-	out := new(RegisterRes)
-	err := c.cc.Invoke(ctx, UserService_RegisterUser_FullMethodName, in, out, opts...)
+func (c *userServiceClient) UserJoin(ctx context.Context, in *UserJoinReq, opts ...grpc.CallOption) (*UserJoinRes, error) {
+	out := new(UserJoinRes)
+	err := c.cc.Invoke(ctx, UserService_UserJoin_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) AuthUser(ctx context.Context, in *AuthReq, opts ...grpc.CallOption) (*AuthRes, error) {
-	out := new(AuthRes)
-	err := c.cc.Invoke(ctx, UserService_AuthUser_FullMethodName, in, out, opts...)
+func (c *userServiceClient) UserAuth(ctx context.Context, in *UserAuthReq, opts ...grpc.CallOption) (*UserAuthRes, error) {
+	out := new(UserAuthRes)
+	err := c.cc.Invoke(ctx, UserService_UserAuth_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -68,13 +76,53 @@ func (c *userServiceClient) UserTest(ctx context.Context, in *UserTestReq, opts 
 	return out, nil
 }
 
+func (c *userServiceClient) UserConn(ctx context.Context, in *UserConnReq, opts ...grpc.CallOption) (*UserConnRes, error) {
+	out := new(UserConnRes)
+	err := c.cc.Invoke(ctx, UserService_UserConn_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UserPingProduct(ctx context.Context, in *UserPingProductReq, opts ...grpc.CallOption) (*UserPingProductRes, error) {
+	out := new(UserPingProductRes)
+	err := c.cc.Invoke(ctx, UserService_UserPingProduct_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UserPingOrder(ctx context.Context, in *UserPingOrderReq, opts ...grpc.CallOption) (*UserPingOrderRes, error) {
+	out := new(UserPingOrderRes)
+	err := c.cc.Invoke(ctx, UserService_UserPingOrder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UserPing(ctx context.Context, in *UserPingReq, opts ...grpc.CallOption) (*UserPingRes, error) {
+	out := new(UserPingRes)
+	err := c.cc.Invoke(ctx, UserService_UserPing_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	RegisterUser(context.Context, *RegisterReq) (*RegisterRes, error)
-	AuthUser(context.Context, *AuthReq) (*AuthRes, error)
+	UserJoin(context.Context, *UserJoinReq) (*UserJoinRes, error)
+	UserAuth(context.Context, *UserAuthReq) (*UserAuthRes, error)
 	UserTest(context.Context, *UserTestReq) (*UserTestRes, error)
+	UserConn(context.Context, *UserConnReq) (*UserConnRes, error)
+	UserPingProduct(context.Context, *UserPingProductReq) (*UserPingProductRes, error)
+	UserPingOrder(context.Context, *UserPingOrderReq) (*UserPingOrderRes, error)
+	UserPing(context.Context, *UserPingReq) (*UserPingRes, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -82,14 +130,26 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedUserServiceServer) RegisterUser(context.Context, *RegisterReq) (*RegisterRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterUser not implemented")
+func (UnimplementedUserServiceServer) UserJoin(context.Context, *UserJoinReq) (*UserJoinRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserJoin not implemented")
 }
-func (UnimplementedUserServiceServer) AuthUser(context.Context, *AuthReq) (*AuthRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AuthUser not implemented")
+func (UnimplementedUserServiceServer) UserAuth(context.Context, *UserAuthReq) (*UserAuthRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserAuth not implemented")
 }
 func (UnimplementedUserServiceServer) UserTest(context.Context, *UserTestReq) (*UserTestRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserTest not implemented")
+}
+func (UnimplementedUserServiceServer) UserConn(context.Context, *UserConnReq) (*UserConnRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserConn not implemented")
+}
+func (UnimplementedUserServiceServer) UserPingProduct(context.Context, *UserPingProductReq) (*UserPingProductRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserPingProduct not implemented")
+}
+func (UnimplementedUserServiceServer) UserPingOrder(context.Context, *UserPingOrderReq) (*UserPingOrderRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserPingOrder not implemented")
+}
+func (UnimplementedUserServiceServer) UserPing(context.Context, *UserPingReq) (*UserPingRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserPing not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -104,38 +164,38 @@ func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 	s.RegisterService(&UserService_ServiceDesc, srv)
 }
 
-func _UserService_RegisterUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RegisterReq)
+func _UserService_UserJoin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserJoinReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).RegisterUser(ctx, in)
+		return srv.(UserServiceServer).UserJoin(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_RegisterUser_FullMethodName,
+		FullMethod: UserService_UserJoin_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).RegisterUser(ctx, req.(*RegisterReq))
+		return srv.(UserServiceServer).UserJoin(ctx, req.(*UserJoinReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_AuthUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthReq)
+func _UserService_UserAuth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserAuthReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).AuthUser(ctx, in)
+		return srv.(UserServiceServer).UserAuth(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_AuthUser_FullMethodName,
+		FullMethod: UserService_UserAuth_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).AuthUser(ctx, req.(*AuthReq))
+		return srv.(UserServiceServer).UserAuth(ctx, req.(*UserAuthReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -158,6 +218,78 @@ func _UserService_UserTest_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_UserConn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserConnReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UserConn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UserConn_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UserConn(ctx, req.(*UserConnReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UserPingProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserPingProductReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UserPingProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UserPingProduct_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UserPingProduct(ctx, req.(*UserPingProductReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UserPingOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserPingOrderReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UserPingOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UserPingOrder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UserPingOrder(ctx, req.(*UserPingOrderReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UserPing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserPingReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UserPing(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UserPing_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UserPing(ctx, req.(*UserPingReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -166,16 +298,32 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "RegisterUser",
-			Handler:    _UserService_RegisterUser_Handler,
+			MethodName: "UserJoin",
+			Handler:    _UserService_UserJoin_Handler,
 		},
 		{
-			MethodName: "AuthUser",
-			Handler:    _UserService_AuthUser_Handler,
+			MethodName: "UserAuth",
+			Handler:    _UserService_UserAuth_Handler,
 		},
 		{
 			MethodName: "UserTest",
 			Handler:    _UserService_UserTest_Handler,
+		},
+		{
+			MethodName: "UserConn",
+			Handler:    _UserService_UserConn_Handler,
+		},
+		{
+			MethodName: "UserPingProduct",
+			Handler:    _UserService_UserPingProduct_Handler,
+		},
+		{
+			MethodName: "UserPingOrder",
+			Handler:    _UserService_UserPingOrder_Handler,
+		},
+		{
+			MethodName: "UserPing",
+			Handler:    _UserService_UserPing_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -83,15 +84,39 @@ func POST_user_test(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request format"})
 	}
 
-	testReq := &pb.UserTestReq{
+	// --------------------------------------------------------------------------
+	// User test ping: USER -> PRODUCT -> ORDER
+	//
+	testRes, testErr := userClient.UserTest(context.TODO(), &pb.UserTestReq{
 		Msg: request.Msg,
-	}
-
-	testRes, testErr := userClient.UserTest(context.Background(), testReq)
-
+	})
 	if testErr != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(parseError(testErr))
 	}
+
+	// --------------------------------------------------------------------------
+	// Product test ping
+	//
+	userPingProductRes, userPingProductErr := userClient.UserPingProduct(context.TODO(), &pb.UserPingProductReq{
+		Msg: "This is a ping: USER -> PRODUCT -> ORDER",
+	})
+	if userPingProductErr != nil {
+		fmt.Println("\n*** [userPingProductErr] -", userPingProductErr)
+	} else {
+		fmt.Println("\n*** [userPingProductRes] -", userPingProductRes)
+	}
+
+	// --------------------------------------------------------------------------
+	// Order test ping: USER -> ORDER -> PRODCUT"
+	//
+	// orderPingRes, orderPingErr := userClient.UserPingOrder(context.TODO(), &pb.UserPingOrderReq{
+	// 	Msg: "This is a ping: USER -> ORDER -> PRODCUT",
+	// })
+	// if orderPingErr != nil {
+	// 	fmt.Println("\n*** [orderPingErr] -", orderPingErr)
+	// } else {
+	// 	fmt.Println("\n*** [orderPingRes] -", orderPingRes)
+	// }
 
 	return c.JSON(testRes)
 }
@@ -105,7 +130,7 @@ func GET_users(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusNotImplemented)
 }
 
-func POST_AuthUser(c *fiber.Ctx) error {
+func POST_UserAuth(c *fiber.Ctx) error {
 
 	var request struct {
 		Username string `json:"username"`
@@ -116,7 +141,7 @@ func POST_AuthUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request format"})
 	}
 
-	authRes, authErr := userClient.AuthUser(context.Background(), &pb.AuthReq{
+	authRes, authErr := userClient.UserAuth(context.Background(), &pb.UserAuthReq{
 		Username: request.Username,
 		Password: request.Password,
 	})
@@ -128,7 +153,7 @@ func POST_AuthUser(c *fiber.Ctx) error {
 	return c.JSON(authRes)
 }
 
-func POST_RegisterUser(c *fiber.Ctx) error {
+func POST_UserJoin(c *fiber.Ctx) error {
 
 	var request struct {
 		Username string `json:"username"`
@@ -141,7 +166,7 @@ func POST_RegisterUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request format"})
 	}
 
-	registerRes, registerErr := userClient.RegisterUser(context.Background(), &pb.RegisterReq{
+	registerRes, registerErr := userClient.UserJoin(context.Background(), &pb.UserJoinReq{
 		Username: request.Username,
 		Password: request.Password,
 		Referral: request.Referral,

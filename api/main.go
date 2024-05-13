@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -94,6 +95,56 @@ func loadGRPC() {
 	} else {
 		userClient = pb.NewUserServiceClient(userConn)
 	}
+
+	connectServices()
+}
+
+func connectServices() {
+
+	if userClient != nil && productClient != nil && orderClient != nil {
+
+		// --------------------------------------------------------------------------
+		// User service
+		userConnReq := &pb.UserConnReq{
+			ProductSrv: productSrv,
+			OrderSrv:   orderSrv,
+		}
+		userConnRes, userConnErr := userClient.UserConn(context.Background(), userConnReq)
+		if userConnErr != nil {
+			fmt.Printf("\n*** >>> User service failed to dial others - %v", userConnErr)
+		} else {
+			fmt.Printf("\n*** >>> %+v", userConnRes)
+		}
+
+		// --------------------------------------------------------------------------
+		// Product service
+		productConnReq := &pb.ProductConnReq{
+			UserSrv:  userSrv,
+			OrderSrv: orderSrv,
+		}
+		productConnRes, productConnErr := productClient.ProductConn(context.Background(), productConnReq)
+		if productConnErr != nil {
+			fmt.Printf("\n*** >>> Product service failed to dial others - %v", productConnErr)
+		} else {
+			fmt.Printf("\n*** >>> %+v", productConnRes)
+		}
+
+		// // --------------------------------------------------------------------------
+		// Order service
+		orderConnReq := &pb.OrderConnReq{
+			ProductSrv: productSrv,
+			UserSrv:    userSrv,
+		}
+		orderConnRes, orderConnErr := orderClient.OrderConn(context.Background(), orderConnReq)
+		if orderConnErr != nil {
+			fmt.Printf("\n*** >>> Order service failed to dial others - %v", orderConnErr)
+		} else {
+			fmt.Printf("\n*** >>> %+v", orderConnRes)
+		}
+
+	} else {
+		fmt.Println("*** >>> One or more of the services is [nil]")
+	}
 }
 
 func fiberApp() *fiber.App {
@@ -134,15 +185,15 @@ func main() {
 	app.Post("/product/test", POST_product_test)
 	app.Post("/user/test", POST_user_test)
 
-	app.Post("/auth", POST_AuthUser)
-	app.Post("/register", POST_RegisterUser)
+	app.Post("/auth", POST_UserAuth)
+	app.Post("/join", POST_UserJoin)
 
 	// --------------------------------------------------------------------------
 	// User API
 	api_user := app.Group("/user")
 	api_user.Use(auth.ValidateJWT)
-	api_user.Get("/products", GET_products)
-	api_user.Get("/inventory", GET_inventory)
+	api_user.Get("/products", auth.RequireRole("cust"), GET_products)
+	api_user.Get("/orders", auth.RequireRole("cust"), GET_orders)
 
 	// --------------------------------------------------------------------------
 	// Admin API
