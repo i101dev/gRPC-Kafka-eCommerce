@@ -18,6 +18,8 @@ var (
 	userDB *gorm.DB
 
 	ADMIN_KEY     string
+	KAFKA_URI     string
+	KAFKA_TOPIC   string
 	USER_SRV_HOST string
 	USER_SRV_PORT string
 )
@@ -39,6 +41,16 @@ func loadENV() {
 	ADMIN_KEY = os.Getenv("ADMIN_KEY")
 	if ADMIN_KEY == "" {
 		log.Fatal("Invalid [ADMIN_KEY] - not found in [.env]")
+	}
+
+	KAFKA_URI = os.Getenv("KAFKA_URI")
+	if KAFKA_URI == "" {
+		log.Fatal("Invalid [KAFKA_URI] - not found in [.env]")
+	}
+
+	KAFKA_TOPIC = os.Getenv("KAFKA_TOPIC")
+	if KAFKA_TOPIC == "" {
+		log.Fatal("Invalid [KAFKA_TOPIC] - not found in [.env]")
 	}
 
 	USER_SRV_HOST = os.Getenv("USER_SRV_HOST")

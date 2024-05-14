@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -97,14 +96,14 @@ func POST_user_test(c *fiber.Ctx) error {
 	// --------------------------------------------------------------------------
 	// Product test ping
 	//
-	userPingProductRes, userPingProductErr := userClient.UserPingProduct(context.TODO(), &pb.UserPingProductReq{
-		Msg: "This is a ping: USER -> PRODUCT -> ORDER",
-	})
-	if userPingProductErr != nil {
-		fmt.Println("\n*** [userPingProductErr] -", userPingProductErr)
-	} else {
-		fmt.Println("\n*** [userPingProductRes] -", userPingProductRes)
-	}
+	// userPingProductRes, userPingProductErr := userClient.UserPingProduct(context.TODO(), &pb.UserPingProductReq{
+	// 	Msg: "This is a ping: USER -> PRODUCT -> ORDER",
+	// })
+	// if userPingProductErr != nil {
+	// 	fmt.Println("\n*** [userPingProductErr] -", userPingProductErr)
+	// } else {
+	// 	fmt.Println("\n*** [userPingProductRes] -", userPingProductRes)
+	// }
 
 	// --------------------------------------------------------------------------
 	// Order test ping: USER -> ORDER -> PRODCUT"

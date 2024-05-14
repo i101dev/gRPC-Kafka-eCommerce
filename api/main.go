@@ -11,6 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/i101dev/gRPC-kafka-eCommerce/auth"
+	"github.com/i101dev/gRPC-kafka-eCommerce/kafka"
 	pb "github.com/i101dev/gRPC-kafka-eCommerce/proto"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
@@ -32,6 +33,8 @@ var (
 	userSrv    string
 	userConn   *grpc.ClientConn
 	userClient pb.UserServiceClient
+
+	KAFKA_URI string
 )
 
 func loadENV() {
@@ -48,6 +51,11 @@ func loadENV() {
 	adminKey = os.Getenv("ADMIN_KEY")
 	if adminKey == "" {
 		log.Fatal("Invalid [ADMIN_KEY] - not found in [.env]")
+	}
+
+	KAFKA_URI = os.Getenv("KAFKA_URI")
+	if KAFKA_URI == "" {
+		log.Fatal("Invalid [KAFKA_URI] - not found in [.env]")
 	}
 
 	orderSrv = os.Getenv("ORDER_SRV")
@@ -177,6 +185,12 @@ func main() {
 	defer userConn.Close()
 
 	app := fiberApp()
+
+	quitCh := make(chan os.Signal, 1)
+
+	go kafka.StartKafkaConsumer("orders", KAFKA_URI, quitCh)
+	go kafka.StartKafkaConsumer("prodcuts", KAFKA_URI, quitCh)
+	go kafka.StartKafkaConsumer("users", KAFKA_URI, quitCh)
 
 	// --------------------------------------------------------------------------
 	// Routers

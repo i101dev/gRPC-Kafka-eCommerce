@@ -2,17 +2,25 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	"github.com/IBM/sarama"
 	"github.com/google/uuid"
 	auth "github.com/i101dev/gRPC-kafka-eCommerce/auth"
+	"github.com/i101dev/gRPC-kafka-eCommerce/kafka"
 	pb "github.com/i101dev/gRPC-kafka-eCommerce/proto"
 )
+
+type KafkaMsg struct {
+	Msg string `form:"msg" json:"msg"`
+}
 
 var (
 	orderClient   pb.OrderServiceClient
@@ -83,9 +91,11 @@ func (s *UserServer) UserTest(ctx context.Context, req *pb.UserTestReq) (*pb.Use
 
 	fmt.Println("*** >>> [user-gRPC] - server test message: ", req.Msg)
 
+	kafkaErr := pushMsgToKafka(req.Msg)
+
 	return &pb.UserTestRes{
 		Msg: req.Msg,
-	}, nil
+	}, kafkaErr
 }
 
 func (s *UserServer) UserConn(ctx context.Context, req *pb.UserConnReq) (*pb.UserConnRes, error) {
@@ -168,4 +178,69 @@ func (s *UserServer) UserPingProduct(ctx context.Context, req *pb.UserPingProduc
 	return &pb.UserPingProductRes{
 		Msg: pingRes.Msg,
 	}, nil
+}
+
+// --------------------------------------------------------------------------
+// Kafka
+func pushMsgToKafka(msg string) error {
+
+	commentInBytes, err := json.Marshal(KafkaMsg{
+		Msg: msg,
+	})
+
+	if err != nil {
+		return fmt.Errorf("*** >>> [@PushKafkaMsg] - Error marshalling to JSON")
+	}
+
+	if err := pushMsgToKafkaQueue(commentInBytes); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func pushMsgToKafkaQueue(message []byte) error {
+
+	producer, err := connectKafkaProducer()
+
+	if err != nil {
+		return err
+	}
+
+	defer producer.Close()
+
+	msg := &sarama.ProducerMessage{
+		Topic:    KAFKA_TOPIC,
+		Value:    sarama.StringEncoder(message),
+		Metadata: []string{1: "metadata 1", 2: "metadata 2", 3: "metadata 3"},
+	}
+
+	partition, offset, err := producer.SendMessage(msg)
+
+	if err != nil {
+		return kafka.HandleKafkaError(err, "Failed to send message to Kafka")
+	}
+
+	fmt.Printf("Message stored in topic (%s)/partition(%d)/offset(%d)\n", KAFKA_TOPIC, partition, offset)
+
+	return nil
+}
+
+func connectKafkaProducer() (sarama.SyncProducer, error) {
+
+	brokerURLs := []string{os.Getenv("KAFKA_URI")}
+
+	config := sarama.NewConfig()
+
+	config.Producer.Retry.Max = 5
+	config.Producer.RequiredAcks = sarama.WaitForAll
+	config.Producer.Return.Successes = true
+
+	producer, err := sarama.NewSyncProducer(brokerURLs, config)
+
+	if err != nil {
+		return nil, kafka.HandleKafkaError(err, "Failed to connect to Kafka broker")
+	}
+
+	return producer, nil
 }
