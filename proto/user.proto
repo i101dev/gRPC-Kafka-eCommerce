@@ -78,6 +78,7 @@ message UserAuthRes {
 //
 message UserTestReq{
     string msg = 1;
+    int64 val = 2;
 }
 message UserTestRes {
     string msg = 1;

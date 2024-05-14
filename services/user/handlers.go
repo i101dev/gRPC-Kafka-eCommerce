@@ -18,9 +18,10 @@ import (
 	pb "github.com/i101dev/gRPC-kafka-eCommerce/proto"
 )
 
-type KafkaMsg struct {
-	Msg string `form:"msg" json:"msg"`
-}
+// type KafkaMsg struct {
+// 	Msg string `form:"msg" json:"msg"`
+// 	Val int64  `form:"val" json:"val"`
+// }
 
 var (
 	orderClient   pb.OrderServiceClient
@@ -89,9 +90,9 @@ func (s *UserServer) AuthUser(ctx context.Context, req *pb.UserAuthReq) (*pb.Use
 
 func (s *UserServer) UserTest(ctx context.Context, req *pb.UserTestReq) (*pb.UserTestRes, error) {
 
-	fmt.Println("*** >>> [user-gRPC] - server test message: ", req.Msg)
+	fmt.Println("*** >>> [user-gRPC] - server test message: ", req)
 
-	kafkaErr := pushMsgToKafka(req.Msg)
+	kafkaErr := pushMsgToKafka(req.Msg, req.Val)
 
 	return &pb.UserTestRes{
 		Msg: req.Msg,
@@ -182,10 +183,11 @@ func (s *UserServer) UserPingProduct(ctx context.Context, req *pb.UserPingProduc
 
 // --------------------------------------------------------------------------
 // Kafka
-func pushMsgToKafka(msg string) error {
+func pushMsgToKafka(msg string, val int64) error {
 
-	commentInBytes, err := json.Marshal(KafkaMsg{
+	commentInBytes, err := json.Marshal(kafka.KafkaMsg{
 		Msg: msg,
+		Val: val,
 	})
 
 	if err != nil {

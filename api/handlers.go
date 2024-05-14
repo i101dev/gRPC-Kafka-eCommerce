@@ -77,6 +77,7 @@ func POST_user_test(c *fiber.Ctx) error {
 
 	var request struct {
 		Msg string `json:"msg"`
+		Val int64  `json:"val"`
 	}
 
 	if err := c.BodyParser(&request); err != nil {
@@ -88,7 +89,9 @@ func POST_user_test(c *fiber.Ctx) error {
 	//
 	testRes, testErr := userClient.UserTest(context.TODO(), &pb.UserTestReq{
 		Msg: request.Msg,
+		Val: request.Val,
 	})
+
 	if testErr != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(parseError(testErr))
 	}

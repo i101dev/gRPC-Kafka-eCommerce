@@ -9,9 +9,9 @@ import (
 	"github.com/IBM/sarama"
 )
 
-func StartKafkaConsumer(topic string, KAFKA_URI string, quitCh <-chan os.Signal) {
+func StartConsumer(topic string, KAFKA_URI string, quitCh <-chan os.Signal) {
 
-	consumer, err := connectConsumer([]string{KAFKA_URI})
+	consumer, err := connect([]string{KAFKA_URI})
 
 	if err != nil {
 		log.Fatalf("Error connecting Kafka consumer for topic %s: %v", topic, err)
@@ -24,7 +24,7 @@ func StartKafkaConsumer(topic string, KAFKA_URI string, quitCh <-chan os.Signal)
 		}
 	}()
 
-	topicConsumer, err := startConsumer(consumer, topic, 0, 0)
+	topicConsumer, err := initialize(consumer, topic, 0, 0)
 
 	if err != nil {
 		fmt.Printf("Error starting Kafka consumer for topic %s: %v\n", topic, err)
@@ -40,7 +40,7 @@ func StartKafkaConsumer(topic string, KAFKA_URI string, quitCh <-chan os.Signal)
 	fmt.Printf("Stopped consuming messages for topic %s\n", topic)
 }
 
-func connectConsumer(brokerURL []string) (sarama.Consumer, error) {
+func connect(brokerURL []string) (sarama.Consumer, error) {
 
 	config := sarama.NewConfig()
 
@@ -55,7 +55,7 @@ func connectConsumer(brokerURL []string) (sarama.Consumer, error) {
 	return conn, nil
 }
 
-func startConsumer(consumer sarama.Consumer, topic string, partition int32, offset int64) (sarama.PartitionConsumer, error) {
+func initialize(consumer sarama.Consumer, topic string, partition int32, offset int64) (sarama.PartitionConsumer, error) {
 
 	partitionConsumer, err := consumer.ConsumePartition(topic, partition, offset)
 
@@ -78,7 +78,7 @@ func processMessages(consumer sarama.PartitionConsumer, quitCh <-chan os.Signal,
 				fmt.Println("\n*** >>> [consumer.error] -", err)
 
 			case msg := <-consumer.Messages():
-				destructureMSG(msg)
+				handleKafkaMsg(msg)
 
 			case <-quitCh:
 				fmt.Println("\nInterruption detected")
@@ -89,19 +89,14 @@ func processMessages(consumer sarama.PartitionConsumer, quitCh <-chan os.Signal,
 	}()
 }
 
-func destructureMSG(msg *sarama.ConsumerMessage) {
+func handleKafkaMsg(msg *sarama.ConsumerMessage) {
 
-	// fmt.Printf("Msg count: %d: | Topic (%s) | Message (%s)\n", last, string(msg.Topic), msg.Value)
-
-	var data map[string]interface{}
+	var data KafkaMsg
 
 	if err := json.Unmarshal(msg.Value, &data); err != nil {
 		fmt.Println("Error decoding message:", err)
 	}
 
-	if msgValue, ok := data["msg"].(string); ok {
-		fmt.Printf("\n*** >>> Message received - %s", msgValue)
-	} else {
-		fmt.Println("Message does not contain 'msg' field or it's not a string")
-	}
+	fmt.Printf("\n*** >>> [msg] - %s", data.Msg)
+	fmt.Printf("\n*** >>> [val] - %d", data.Val)
 }

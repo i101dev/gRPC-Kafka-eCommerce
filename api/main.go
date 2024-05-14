@@ -188,9 +188,9 @@ func main() {
 
 	quitCh := make(chan os.Signal, 1)
 
-	go kafka.StartKafkaConsumer("orders", KAFKA_URI, quitCh)
-	go kafka.StartKafkaConsumer("prodcuts", KAFKA_URI, quitCh)
-	go kafka.StartKafkaConsumer("users", KAFKA_URI, quitCh)
+	go kafka.StartConsumer("orders", KAFKA_URI, quitCh)
+	go kafka.StartConsumer("prodcuts", KAFKA_URI, quitCh)
+	go kafka.StartConsumer("users", KAFKA_URI, quitCh)
 
 	// --------------------------------------------------------------------------
 	// Routers
