@@ -51,6 +51,7 @@ message OrderConnRes{
 //
 message OrderTestReq{
     string msg = 1;
+    int64 val = 2;
 }
 message OrderTestRes {
     string msg = 1;

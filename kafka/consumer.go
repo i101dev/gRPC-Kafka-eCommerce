@@ -33,7 +33,7 @@ func StartConsumer(topic string, KAFKA_URI string, quitCh <-chan os.Signal) {
 
 	doneCh := make(chan struct{})
 
-	processMessages(topicConsumer, quitCh, doneCh)
+	processMessages(topic, topicConsumer, quitCh, doneCh)
 
 	<-doneCh
 
@@ -68,7 +68,7 @@ func initialize(consumer sarama.Consumer, topic string, partition int32, offset 
 	return partitionConsumer, nil
 }
 
-func processMessages(consumer sarama.PartitionConsumer, quitCh <-chan os.Signal, doneCh chan struct{}) {
+func processMessages(topic string, consumer sarama.PartitionConsumer, quitCh <-chan os.Signal, doneCh chan struct{}) {
 
 	go func() {
 		for {
@@ -78,7 +78,7 @@ func processMessages(consumer sarama.PartitionConsumer, quitCh <-chan os.Signal,
 				fmt.Println("\n*** >>> [consumer.error] -", err)
 
 			case msg := <-consumer.Messages():
-				handleKafkaMsg(msg)
+				handleKafkaMsg(topic, msg)
 
 			case <-quitCh:
 				fmt.Println("\nInterruption detected")
@@ -89,14 +89,35 @@ func processMessages(consumer sarama.PartitionConsumer, quitCh <-chan os.Signal,
 	}()
 }
 
-func handleKafkaMsg(msg *sarama.ConsumerMessage) {
+func handleKafkaMsg(topic string, msg *sarama.ConsumerMessage) {
 
-	var data KafkaMsg
-
-	if err := json.Unmarshal(msg.Value, &data); err != nil {
-		fmt.Println("Error decoding message:", err)
+	switch topic {
+	case "orders":
+		var data = new(OrderMsg)
+		if err := json.Unmarshal(msg.Value, &data); err != nil {
+			fmt.Printf("Error decoding (%s) message: %+v", topic, err)
+		}
+		fmt.Printf("\n*** >>> (ORDERS) - msg: (%s) - val: (%d)\n", data.Msg, data.Val)
+	//
+	//
+	case "products":
+		var data = new(ProductMsg)
+		if err := json.Unmarshal(msg.Value, &data); err != nil {
+			fmt.Printf("Error decoding (%s) message: %+v", topic, err)
+		}
+		fmt.Printf("\n*** >>> (PRODUCTS) - msg: (%s) - val: (%d)\n", data.Msg, data.Val)
+		//
+		//
+	case "users":
+		var data = new(UserMsg)
+		if err := json.Unmarshal(msg.Value, &data); err != nil {
+			fmt.Printf("Error decoding (%s) message: %+v", topic, err)
+		}
+		fmt.Printf("\n*** >>> (USERS) - msg: (%s) - val: (%d)\n", data.Msg, data.Val)
+		//
+		//
+	default:
+		break
 	}
 
-	fmt.Printf("\n*** >>> [msg] - %s", data.Msg)
-	fmt.Printf("\n*** >>> [val] - %d", data.Val)
 }

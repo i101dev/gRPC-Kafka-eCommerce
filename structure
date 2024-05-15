@@ -1,7 +1,8 @@
-E-commerce-Order-Processing-Platform/
+gRPC-Kafka-microservices/
 │ 
 ├── api/
 │   ├── .env
+│   ├── docker-compose.yaml
 │   ├── handlers.go
 │   ├── main.go
 │   └── Makefile
@@ -9,13 +10,20 @@ E-commerce-Order-Processing-Platform/
 ├── auth/
 │   └── jwt.go
 │   
-├── kafka/
-│   ├── topics/
-│   ├── consumers/
-│   ├── producers/
-│   └── config/
+├── config/
+│   └── config.go
 │   
-├── microservices/
+├── kafka/
+│   ├── consumer.go
+│   ├── errors.go
+│   └── messages.go
+│   
+├── proto/
+│   ├── order.proto
+│   ├── product.proto
+│   └── user.proto
+│  
+├── services/
 │   ├── user/
 │   │   ├── .env
 │   │   ├── docker-compose.yaml
@@ -36,12 +44,6 @@ E-commerce-Order-Processing-Platform/
 │       ├── handlers.go
 │       ├── main.go
 │       └── models.go
-│   
-├── proto/
-│   ├── user-service.proto
-│   ├── product-service.proto
-│   ├── order-service.proto
-│   └── inventory-service.proto
 │   
 ├── .gitignore
 ├── go.mod

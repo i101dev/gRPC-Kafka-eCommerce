@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
+	"github.com/i101dev/gRPC-kafka-eCommerce/kafka"
 	pb "github.com/i101dev/gRPC-kafka-eCommerce/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -16,11 +18,13 @@ var (
 
 func (s *ProductServer) ProductTest(ctx context.Context, req *pb.ProductTestReq) (*pb.ProductTestRes, error) {
 
-	fmt.Println("*** >>> [product-gRPC] - server test message: ", req.Msg)
+	// fmt.Println("*** >>> [product-gRPC] - server test message: ", req)
+
+	kafkaErr := pushMsgToKafka(req.Msg, req.Val)
 
 	return &pb.ProductTestRes{
 		Msg: req.Msg,
-	}, nil
+	}, kafkaErr
 }
 
 func (s *ProductServer) ProductConn(ctx context.Context, req *pb.ProductConnReq) (*pb.ProductConnRes, error) {
@@ -103,4 +107,22 @@ func (s *ProductServer) ProductPingOrder(ctx context.Context, req *pb.ProductPin
 	return &pb.ProductPingOrderRes{
 		Msg: pingRes.Msg,
 	}, nil
+}
+
+// --------------------------------------------------------------------------
+// Kafka
+func pushMsgToKafka(msg string, val int64) error {
+
+	msgInBytes, err := json.Marshal(kafka.ProductMsg{
+		Msg: msg,
+		Val: val,
+	})
+
+	if err != nil {
+		return kafka.HandleKafkaError(err, "Error marshalling to JSON")
+	}
+
+	err = kafka.PushMsgToQueue(KAFKA_URI, KAFKA_TOPIC, msgInBytes)
+
+	return err
 }

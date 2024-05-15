@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/i101dev/gRPC-kafka-eCommerce/kafka"
 	pb "github.com/i101dev/gRPC-kafka-eCommerce/proto"
 )
 
@@ -31,9 +32,7 @@ func GET_index(c *fiber.Ctx) error {
 
 func POST_order_test(c *fiber.Ctx) error {
 
-	var request struct {
-		Msg string `json:"msg"`
-	}
+	var request = new(kafka.OrderMsg)
 
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request format"})
@@ -41,6 +40,7 @@ func POST_order_test(c *fiber.Ctx) error {
 
 	testReq := &pb.OrderTestReq{
 		Msg: request.Msg,
+		Val: request.Val,
 	}
 
 	testRes, testErr := orderClient.OrderTest(context.Background(), testReq)
@@ -53,9 +53,7 @@ func POST_order_test(c *fiber.Ctx) error {
 }
 func POST_product_test(c *fiber.Ctx) error {
 
-	var request struct {
-		Msg string `json:"msg"`
-	}
+	var request = new(kafka.ProductMsg)
 
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request format"})
@@ -63,6 +61,7 @@ func POST_product_test(c *fiber.Ctx) error {
 
 	testReq := &pb.ProductTestReq{
 		Msg: request.Msg,
+		Val: request.Val,
 	}
 
 	testRes, testErr := productClient.ProductTest(context.Background(), testReq)
@@ -75,10 +74,7 @@ func POST_product_test(c *fiber.Ctx) error {
 }
 func POST_user_test(c *fiber.Ctx) error {
 
-	var request struct {
-		Msg string `json:"msg"`
-		Val int64  `json:"val"`
-	}
+	var request = new(kafka.UserMsg)
 
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request format"})

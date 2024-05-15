@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
+	"github.com/i101dev/gRPC-kafka-eCommerce/kafka"
 	pb "github.com/i101dev/gRPC-kafka-eCommerce/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -16,11 +18,13 @@ var (
 
 func (s *OrderServer) OrderTest(ctx context.Context, req *pb.OrderTestReq) (*pb.OrderTestRes, error) {
 
-	fmt.Println("*** >>> [order-gRPC] - server test message: ", req.Msg)
+	// fmt.Println("*** >>> [order-gRPC] - server test message: ", req.Msg)
+
+	kafkaErr := pushMsgToKafka(req.Msg, req.Val)
 
 	return &pb.OrderTestRes{
 		Msg: req.Msg,
-	}, nil
+	}, kafkaErr
 }
 
 func (s *OrderServer) OrderConn(ctx context.Context, req *pb.OrderConnReq) (*pb.OrderConnRes, error) {
@@ -90,3 +94,21 @@ func (s *OrderServer) OrderPing(ctx context.Context, req *pb.OrderPingReq) (*pb.
 // 	// Proxy to Order-service
 // 	return c.SendStatus(fiber.StatusNotImplemented)
 // }
+
+// --------------------------------------------------------------------------
+// Kafka
+func pushMsgToKafka(msg string, val int64) error {
+
+	msgInBytes, err := json.Marshal(kafka.OrderMsg{
+		Msg: msg,
+		Val: val,
+	})
+
+	if err != nil {
+		return kafka.HandleKafkaError(err, "Error marshalling to JSON")
+	}
+
+	err = kafka.PushMsgToQueue(KAFKA_URI, KAFKA_TOPIC, msgInBytes)
+
+	return err
+}

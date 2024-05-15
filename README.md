@@ -1,4 +1,4 @@
-# Microservices - E-commerce Order Processing
+# gRPC - Kafka - Microservices
 
 ## Components:
 
